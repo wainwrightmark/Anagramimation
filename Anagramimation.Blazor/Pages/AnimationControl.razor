@@ -1,0 +1,129 @@
+﻿
+
+<div>
+
+    <p>
+        <MatTextField OnFocus="()=>Animate=false" OnFocusOut="()=>Animate=true" @bind-Value="@Word1" PlaceHolder="@PlaceHolderWord1" Label="First"></MatTextField>
+    </p>
+    <p>
+        <MatTextField OnFocus="()=>Animate=false" OnFocusOut="()=>Animate=true" @bind-Value="@Word2" PlaceHolder="@PlaceHolderWord2" Label="Second"></MatTextField>
+    </p>
+
+    <p>
+        <label>Spacing</label>
+        <MatSlider  Immediate="true" Discrete="true" Pin="true" ValueMin="1" ValueMax="100" @bind-Value="@Config.SpacingPixels"/>
+    </p>
+
+    <p>
+        <label>Duration</label>
+        <MatSlider  Immediate="true" Discrete="true" Pin="true" ValueMin="1" ValueMax="20" @bind-Value="@Config.DurationSeconds"/>
+    </p>
+
+    <p>
+        <label>Height</label>
+        <MatSlider  Immediate="true" Discrete="true" Pin="true" ValueMin="0" ValueMax="10" @bind-Value="@Config.HeightFactor"/>
+    </p>
+
+    <p>
+        <label>Rest</label>
+        <MatSlider Immediate="true" Discrete="true" Pin="true" ValueMin="0" ValueMax="50" @bind-Value="@Config.RestPercent"/>
+    </p>
+
+
+    <p>
+        <MatSelect Label="Timing" @bind-Value="@Timing">
+            @foreach(var timing in Enum.GetValues<AnimationTiming>())
+            {
+                <MatOption Value="@timing.ToString()" >@timing</MatOption>
+            }
+        </MatSelect>
+    </p>
+    <p>
+        <MatSelect Label="PathFinding" @bind-Value="@PFinding">
+            @foreach(var timing in Enum.GetValues<PathFinding>())
+            {
+                <MatOption Value="@timing.ToString()" >@timing</MatOption>
+            }
+        </MatSelect>
+    </p>
+    <p>
+        <MatButton OnClick="@(e => { dialogIsOpen = true; })" Raised="true">HTML</MatButton>
+
+    </p>
+
+    <p>
+        <MatDialog @bind-IsOpen="@dialogIsOpen">
+            <MatDialogTitle>HTML</MatDialogTitle>
+            <MatDialogContent>
+                @Animation.GetHtml()
+            </MatDialogContent>
+            <MatDialogActions>
+                <MatButton OnClick="@(e => { dialogIsOpen = false; })">x</MatButton>
+            </MatDialogActions>
+        </MatDialog>
+    </p>
+
+</div>
+
+<p>
+    <Animation @ref="Animation" Animate="@Animate" CharMatchingConfig="@CharMatchConfig" Config="@Config" Word1="@Word1" Word2="@Word2"></Animation>
+</p>
+
+
+
+
+@code {
+
+    public Animation Animation;
+    bool dialogIsOpen = false;
+
+    public const string PlaceHolderWord1 = "animate";
+    public const string PlaceHolderWord2 = "anagram";
+
+    public bool Animate { get; set; } = true;
+
+    public string Word1 { get; set; } = PlaceHolderWord1;
+
+    public string Word2 { get; set; }= PlaceHolderWord2;
+
+    public string Timing
+    {
+        get => Config.Timing.ToString();
+        set
+        {
+            if (Enum.TryParse(value, true, out AnimationTiming v))
+            {
+                Config.Timing = v;
+            }
+        }
+    }
+
+    public string PFinding
+    {
+        get => Config.PathFinding.ToString();
+        set
+        {
+            if (Enum.TryParse(value, true, out PathFinding v))
+            {
+                Config.PathFinding = v;
+            }
+        }
+    }
+
+    public CharMatchingConfig CharMatchConfig = new()
+    {
+        CaseSensitive = false,
+        AllowReflection = true,
+        AllowRotation = true
+    };
+
+    public AnimationConfig Config = new ()
+    {
+        SpacingPixels = 30,
+        Timing = AnimationTiming.linear,
+        DurationSeconds = 3,
+        HeightFactor = 2,
+        RestPercent = 20,
+        PathFinding = PathFinding.Factory
+    };
+}

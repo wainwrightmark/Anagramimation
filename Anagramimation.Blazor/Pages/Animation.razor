@@ -1,0 +1,88 @@
+﻿@using System.Collections.Immutable
+@using System.Text
+
+
+<div class="area ">
+    @foreach (var path in Paths)
+    {
+        var style = path.GetStyle(Config, Animate);
+
+        <span class="letter" style="@style">@path.Letter</span>
+    }
+</div>
+
+
+<style>
+    .letter { position: absolute; }
+
+    .area {font-family: monospace;font-size: @(Config.SpacingPixels + "px");position: relative;top: @((Config.SpacingPixels * 2) + "px");}
+
+    @foreach (var path in Paths)
+    {
+        <text>
+            @path.GetAnimationDefinition(Config)
+        </text>
+    }
+</style>
+
+
+@code {
+
+    [Parameter]
+    public string Word1 { get; set; }
+
+    [Parameter]
+    public string Word2 { get; set; }
+
+    [Parameter]
+    public bool Animate { get; set; }
+
+    [Parameter]
+    public AnimationConfig Config { get; set; }
+
+    [Parameter]
+    public CharMatchingConfig CharMatchingConfig { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        var (newList1, newList2) = LetterPairer.PairUp(Word1, Word2, CharMatchingConfig);
+
+        Paths = LetterPairer.CreatePathArray(newList1, newList2);
+
+        base.OnParametersSet();
+    }
+
+    public ImmutableList<Path> Paths { get; set; }
+
+    public string GetHtml()
+    {
+        var sb = new StringBuilder();
+
+        sb.AppendLine("<div class=\"area\">");
+        foreach (var path in Paths)
+        {
+            var style = path.GetStyle(Config, Animate);
+
+            sb.AppendLine($"<span class=\"letter\" style=\"{style}\">{path.Letter}</span>");
+        }
+        sb.AppendLine("</div>");
+
+
+
+
+
+        sb.AppendLine("<style>");
+        sb.AppendLine("\t.letter { position: absolute; }");
+        sb.AppendLine($".area {{font-family: monospace;font-size: {Config.SpacingPixels}px;position: relative;top: {(Config.SpacingPixels * 2)}px;}}");
+
+
+        foreach (var path in Paths)
+        {
+            sb.AppendLine(path.GetAnimationDefinition(Config));
+        }
+        sb.AppendLine("</style>");
+
+        return sb.ToString();
+    }
+}
