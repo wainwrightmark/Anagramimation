@@ -18,7 +18,7 @@ jobs:
         dotnet-version: 5.0.100
     # publishes Blazor project to the release-folder
     - name: Publish .NET Core Project
-      run: dotnet publish Anagramimation/Anagramimation.Blazor.csproj -c Release -o release --nologo
+      run: dotnet publish Anagramimation.Blazor/Anagramimation.Blazor.csproj -c Release -o release --nologo
       # changes the base-tag in index.html from '/' to 'Anagramimation' to match GitHub Pages repository subdirectory
     - name: Change base-tag in index.html from / to Anagramimation
       run: sed -i 's/<base href="\/" \/>/<base href="\/Anagramimation\/" \/>/g' release/wwwroot/index.html
