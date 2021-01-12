@@ -3,19 +3,40 @@
 
 
 <div class="area ">
-    @foreach (var path in Paths)
-    {
-        var style = path.GetStyle(Config, Animate);
 
-        <span class="letter" style="@style">@path.Letter</span>
-    }
+    <div class="word">
+        @foreach (var path in Paths)
+        {
+            var style = path.GetStyle(Config, Animate);
+
+            <span class="letter" style="@style">@path.Letter</span>
+        }
+    </div>
+
 </div>
 
 
 <style>
-    .letter { position: absolute; }
+    .area {
+        position: relative;
+        font-size: @(Config.SpacingPixels + "px");
 
-    .area {font-family: monospace;font-size: @(Config.SpacingPixels + "px");position: relative;top: @((Config.SpacingPixels * 2) + "px");}
+        height: @((Config.SpacingPixels * Config.HeightFactor * 2) + "px");
+        width: @((Config.SpacingPixels * Paths.Count) +"px");
+    }
+
+    .word {
+        position: absolute;
+        top:@((Config.SpacingPixels * Config.HeightFactor) + "px");
+        right: @(Config.SpacingPixels + "px");
+    }
+
+    .letter {
+        position: absolute;
+        font-family: monospace;
+    }
+
+
 
     @foreach (var path in Paths)
     {
@@ -23,6 +44,7 @@
             @path.GetAnimationDefinition(Config)
         </text>
     }
+
 </style>
 
 
@@ -55,7 +77,7 @@
 
     public ImmutableList<Path> Paths { get; set; }
 
-    public string GetHtml()
+    public string GetHtml()//TODO update
     {
         var sb = new StringBuilder();
 

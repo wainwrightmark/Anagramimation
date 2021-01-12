@@ -26,16 +26,16 @@ public enum PathFinding
 
 public abstract record Path
 {
-    private Path(char letter, int totalLength)
+    private Path(Rune letter, int totalLength)
     {
         Letter      = letter;
         TotalLength = totalLength;
     }
 
-    public char Letter { get; }
+    public Rune Letter { get; }
     public int TotalLength { get; }
 
-    public record Move(char Letter, int TotalLength, int Start, int End, bool Reflect, int Rotate) : Path(Letter, TotalLength)
+    public record Move(Rune Letter, int TotalLength, int Start, int End, bool Reflect, int Rotate) : Path(Letter, TotalLength)
     {
         /// <inheritdoc />
         public override string GetStyle(AnimationConfig config, bool enableAnimation)
@@ -113,7 +113,7 @@ public abstract record Path
         }
     }
 
-    public record Disappear(char Letter, int TotalLength, int Start) : Path(Letter, TotalLength)
+    public record Disappear(Rune Letter, int TotalLength, int Start) : Path(Letter, TotalLength)
     {
         /// <inheritdoc />
         public override string GetStyle(AnimationConfig config, bool enableAnimation)
@@ -143,7 +143,7 @@ public abstract record Path
         }
     }
 
-    public record Appear(char Letter, int TotalLength, int End) : Path(Letter, TotalLength)
+    public record Appear(Rune Letter, int TotalLength, int End) : Path(Letter, TotalLength)
     {
         /// <inheritdoc />
         public override string GetStyle(AnimationConfig config, bool enableAnimation)
@@ -251,11 +251,15 @@ public record AnimationPoint(int Percentage, int? Top, int? Left, double? Opacit
 
         var rotation = Rotation % 360;
 
+        StringBuilder transform = new();
+
         if (rotation > 0)
-            data.Append($"transform: rotate({rotation}deg);");
+            transform.Append($"rotate({rotation}deg)");
 
         if (Reflect)
-            data.Append("transform: rotateY(180deg);");
+            transform.Append("rotateY(180deg)");
+        if(transform.Length > 0)
+            data.AppendLine($"transform: {transform};");
 
         return $"  {Percentage}% {{{data}}}";
 

@@ -1,27 +1,28 @@
-﻿
+﻿<p>
+    <Animation @ref="Animation" Animate="@Animate" CharMatchingConfig="@CharMatchConfig" Config="@Config" Word1="@(Word1 ?? PlaceHolderWord1)" Word2="@(Word2 ?? PlaceHolderWord2)"></Animation>
+</p>
+
+<p>
+    <MatTextField OnFocus="() => Animate = false" OnFocusOut="() => Animate = true" @bind-Value="@Word1" PlaceHolder="@PlaceHolderWord1" Label="First"></MatTextField>
+    <MatTextField OnFocus="() => Animate = false" OnFocusOut="() => Animate = true" @bind-Value="@Word2" PlaceHolder="@PlaceHolderWord2" Label="Second"></MatTextField>
+</p>
+
 
 <div>
-
-    <p>
-        <MatTextField OnFocus="()=>Animate=false" OnFocusOut="()=>Animate=true" @bind-Value="@Word1" PlaceHolder="@PlaceHolderWord1" Label="First"></MatTextField>
-    </p>
-    <p>
-        <MatTextField OnFocus="()=>Animate=false" OnFocusOut="()=>Animate=true" @bind-Value="@Word2" PlaceHolder="@PlaceHolderWord2" Label="Second"></MatTextField>
-    </p>
-
+    <div>
     <p>
         <label>Spacing</label>
-        <MatSlider  Immediate="true" Discrete="true" Pin="true" ValueMin="1" ValueMax="100" @bind-Value="@Config.SpacingPixels"/>
+        <MatSlider Immediate="true" Discrete="true" Pin="true" ValueMin="1" ValueMax="100" @bind-Value="@Config.SpacingPixels"/>
     </p>
 
     <p>
         <label>Duration</label>
-        <MatSlider  Immediate="true" Discrete="true" Pin="true" ValueMin="1" ValueMax="20" @bind-Value="@Config.DurationSeconds"/>
+        <MatSlider Immediate="true" Discrete="true" Pin="true" ValueMin="1" ValueMax="20" @bind-Value="@Config.DurationSeconds"/>
     </p>
 
     <p>
         <label>Height</label>
-        <MatSlider  Immediate="true" Discrete="true" Pin="true" ValueMin="0" ValueMax="10" @bind-Value="@Config.HeightFactor"/>
+        <MatSlider Immediate="true" Discrete="true" Pin="true" ValueMin="0" ValueMax="10" @bind-Value="@Config.HeightFactor"/>
     </p>
 
     <p>
@@ -32,17 +33,17 @@
 
     <p>
         <MatSelect Label="Timing" @bind-Value="@Timing">
-            @foreach(var timing in Enum.GetValues<AnimationTiming>())
+            @foreach (var timing in Enum.GetValues<AnimationTiming>())
             {
-                <MatOption Value="@timing.ToString()" >@timing</MatOption>
+                <MatOption Value="@timing.ToString()">@timing</MatOption>
             }
         </MatSelect>
     </p>
     <p>
         <MatSelect Label="PathFinding" @bind-Value="@PFinding">
-            @foreach(var timing in Enum.GetValues<PathFinding>())
+            @foreach (var timing in Enum.GetValues<PathFinding>())
             {
-                <MatOption Value="@timing.ToString()" >@timing</MatOption>
+                <MatOption Value="@timing.ToString()">@timing</MatOption>
             }
         </MatSelect>
     </p>
@@ -55,21 +56,17 @@
         <MatDialog @bind-IsOpen="@dialogIsOpen">
             <MatDialogTitle>HTML</MatDialogTitle>
             <MatDialogContent>
-                @Animation.GetHtml()
+                <p>
+                    @Animation.GetHtml()
+                </p>
             </MatDialogContent>
             <MatDialogActions>
                 <MatButton OnClick="@(e => { dialogIsOpen = false; })">x</MatButton>
             </MatDialogActions>
         </MatDialog>
     </p>
-
+        </div>
 </div>
-
-<p>
-    <Animation @ref="Animation" Animate="@Animate" CharMatchingConfig="@CharMatchConfig" Config="@Config" Word1="@Word1" Word2="@Word2"></Animation>
-</p>
-
-
 
 
 @code {
@@ -77,14 +74,14 @@
     public Animation Animation;
     bool dialogIsOpen = false;
 
-    public const string PlaceHolderWord1 = "animate";
-    public const string PlaceHolderWord2 = "anagram";
+        public const string PlaceHolderWord1 = "animate";
+        public const string PlaceHolderWord2 = "anagram";
 
     public bool Animate { get; set; } = true;
 
-    public string Word1 { get; set; } = PlaceHolderWord1;
+    public string? Word1 { get; set; }
 
-    public string Word2 { get; set; }= PlaceHolderWord2;
+    public string? Word2 { get; set; }
 
     public string Timing
     {
@@ -117,7 +114,7 @@
         AllowRotation = true
     };
 
-    public AnimationConfig Config = new ()
+    public AnimationConfig Config = new()
     {
         SpacingPixels = 30,
         Timing = AnimationTiming.linear,
@@ -126,4 +123,5 @@
         RestPercent = 20,
         PathFinding = PathFinding.Factory
     };
+
 }

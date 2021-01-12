@@ -1,20 +1,22 @@
-﻿namespace Anagramimation
+﻿using System.Text;
+
+namespace Anagramimation
 {
 
 public abstract record PairableLetter
 {
-    private PairableLetter(char letter, int index)
+    private PairableLetter(Rune letter, int index)
     {
         Letter = letter;
         Index  = index;
     }
 
-    public char Letter { get; }
+    public Rune Letter { get; }
     public int Index { get; }
 
     public abstract Path ToPath(bool isFirst, int totalLength);
 
-    public record UnPaired(char Letter, int Index, bool CouldPair) : PairableLetter(
+    public record UnPaired(Rune Letter, int Index, bool CouldPair) : PairableLetter(
         Letter,
         Index
     )
@@ -25,7 +27,7 @@ public abstract record PairableLetter
             : new Path.Appear(Letter, totalLength, Index);
     }
 
-    public record Paired(char Letter, int Index, int OtherIndex, bool Reflect, int DegreesRotation) :
+    public record Paired(Rune Letter, int Index, int OtherIndex, bool Reflect, int DegreesRotation) :
         PairableLetter(
             Letter,
             Index

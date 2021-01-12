@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 
 namespace Anagramimation
 {
@@ -51,7 +52,7 @@ public class LetterPairer
 
 
 
-    public static ImmutableArray<PairableLetter> ToPairableLetters(string s) => s.Select((x, i) => new PairableLetter.UnPaired(x, i, x != ' '))
+    public static ImmutableArray<PairableLetter> ToPairableLetters(string s) => s.EnumerateRunes().Select((x, i) => new PairableLetter.UnPaired(x, i, x != new Rune(' ')))
         .ToImmutableArray<PairableLetter>();
 
     public static (ImmutableArray<PairableLetter> newList1, ImmutableArray<PairableLetter> newList2)
