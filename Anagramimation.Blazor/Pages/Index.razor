@@ -1,3 +1,13 @@
 ﻿@page "/"
+@page "/{First}/{Second}"
 
-<AnimationControl></AnimationControl>
+
+<AnimationControl Word1="@First" Word2="@Second"></AnimationControl>
+
+@code
+{
+    [Parameter]
+    public string First { get; set; }
+    [Parameter]
+    public string Second { get; set; }
+}
