@@ -19,6 +19,9 @@ public record AnimationStepConfig
 
     public bool Clockwise { get; init; }
 
+    /// <summary>
+    /// Rest duration
+    /// </summary>
     public double Waypoint1 { get; init; } = 0.4;
     public double Waypoint2 { get; init; } = 0.7;
     public double Waypoint3 { get; init; } = 0.8;

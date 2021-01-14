@@ -91,10 +91,29 @@ namespace Anagramimation
 
             foreach (var (rune, index) in remainingLetters) //TODO pair up with remaining paths
             {
-                var newNode = new Node(index, false, 0);
-                var path = new Path(rune, emptyNodes.Add(newNode));
-                newPaths.Add(path);
-                newPathWord.Add((rune, path, index));
+                var matchingPaths = remainingPaths
+                    .Select(other => (other, match: config.GetMatch(rune, other.Letter)))
+                        .Where(x => x.match.Strength > 0)
+                        .OrderByDescending(x => x.match.Strength)
+                        .Take(1)
+                        .ToList();
+
+                Path newPath;
+
+                if (matchingPaths.Any())
+                {
+                    var (other, match) = matchingPaths.Single();
+                    remainingPaths.Remove(other);
+                    newPath = other with { Nodes = other.Nodes.Add(new Node(index, match.Reflect, match.DegreesRotation)) };
+                }
+                else
+                {
+                    var newNode = new Node(index, false, 0);
+                    newPath = new Path(rune, emptyNodes.Add(newNode));
+
+                }
+                newPaths.Add(newPath);
+                newPathWord.Add((rune, newPath, index));
             }
 
             newPaths.AddRange(remainingPaths.Select(rp=> rp with{Nodes = rp.Nodes.Add(null)}));

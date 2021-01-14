@@ -229,7 +229,7 @@ public abstract record Pattern(string Name, int NumberOfWaypoints, PatternEnum P
         return (Convert.ToInt32(height), Convert.ToInt32(startLeft), Convert.ToInt32(endLeft));
     }
 
-    protected static int GetPercentage(
+    public static int GetPercentage(
         int startPercent,
         int endPercent,
         double proportion)

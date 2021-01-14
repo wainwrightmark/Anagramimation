@@ -3,7 +3,12 @@
 
 
 
-<Input AllowClear="true" Value="@Word" TValue="String" OnChange="@(WordChanged)" Placeholder="@(Anagramimation.State.InitialValues[Index].PlaceHolder)"/>
+<Input AllowClear="true"
+       Value="@Word"
+       TValue="String"
+       OnChange="@(WordChanged)"
+       Placeholder="@(Anagramimation.State.InitialValues[Index].PlaceHolder)"
+/>
 <Button OnClick="Close">x</Button>
 <Collapse>
     <Panel Header="Advanced">
@@ -37,7 +42,7 @@
                 <Select
                 TItem="PatternEnum"
                 TItemValue="PatternEnum"
-                OnSelectedItemChanged="@(v=>Dispatch(x=>x with{Pattern= Pattern.GetPattern(v)}))"
+                OnSelectedItemChanged="@SetPattern"
                 Value="@Config.Pattern.PatternEnum">
                 <SelectOptions>
                     @foreach (var v in Enum.GetValues<PatternEnum>())
@@ -71,12 +76,19 @@
 
     private void WordChanged(string w)
     {
-        Dispatcher.Dispatch(new SetWordAction(Index, w));
+        Dispatcher.Dispatch(new SetWordAction(Index, w??""));
     }
 
     private void Dispatch(Func<AnimationStepConfig, AnimationStepConfig> func)
     {
         var action = new SetConfigAction(Index, func);
+        Dispatcher.Dispatch(action);
+    }
+
+    public void SetPattern(PatternEnum patternEnum)
+    {
+        var pattern = Pattern.GetPattern(patternEnum);
+        var action = new SetConfigAction(Index, x=> x with{Pattern = pattern});
         Dispatcher.Dispatch(action);
     }
 

@@ -36,7 +36,7 @@
     <Paragraph Copyable CopyConfig="@(new TypographyCopyableConfig(){Text = State.Value.GetHtml()})" Editable="false">
         HTML
     </Paragraph>
-    <Button OnClick="Sync">Sync</Button>
+    @*<Button OnClick="Sync">Sync</Button>*@
 </div>
 
 
@@ -55,12 +55,12 @@
         Dispatcher.Dispatch(action);
     }
 
-    private async void Sync()
-    {
-        Dispatch(x=>x with{EnableAnimation = false});
-        await Task.Delay(100);
-        Dispatch(x => x with{EnableAnimation = true});
-    }
+    //private async void Sync()
+    //{
+    //    Dispatch(x=>x with{EnableAnimation = false});
+    //    await Task.Delay(100);
+    //    Dispatch(x => x with{EnableAnimation = true});
+    //}
 
     public void AddNew()
     {

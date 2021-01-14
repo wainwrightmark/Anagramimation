@@ -116,9 +116,14 @@ public record Path(Rune Letter, ImmutableList<Node?> Nodes)
 
             var nextPercentage =
                 currentPercentage + (stepConfig.DurationSeconds * 100 / totalDuration);
-
+            var restPercentage = Pattern.GetPercentage(currentPercentage, nextPercentage, stepConfig.Waypoint1);
             if (node == null)
+            {
                 yield return AnimationPoint.Invisible with { Percentage = currentPercentage, Left = left};//TODO factor in rest points
+
+                yield return AnimationPoint.Invisible with{ Percentage = restPercentage, Left = left};
+
+            }
             else
             {
                 var nextNodeIndex = i + 1 >= Nodes.Count ? 0 : i + 1;
@@ -130,14 +135,19 @@ public record Path(Rune Letter, ImmutableList<Node?> Nodes)
                         node.RuneIndex * globalConfig.FontPixels * globalConfig.RelativeWidth
                     );
 
-                    yield return new AnimationPoint(
-                        currentPercentage,
-                        0,
-                        startLeft,
-                        1,
-                        node.RotationDegrees,
-                        node.Reflect
-                    );
+                        var disappearNode = new AnimationPoint(
+                            currentPercentage,
+                            0,
+                            startLeft,
+                            1,
+                            node.RotationDegrees,
+                            node.Reflect
+                        );
+
+                        var restNode = disappearNode with { Percentage = restPercentage };
+
+                        yield return disappearNode;
+                        yield return restNode;
                 }
                 else
                 {
