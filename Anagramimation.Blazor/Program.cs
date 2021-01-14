@@ -1,13 +1,10 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
-using MatBlazor;
+using Fluxor;
 
 namespace Anagramimation.Blazor
 {
@@ -20,9 +17,18 @@ namespace Anagramimation.Blazor
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-            builder.Services.AddMatBlazor();
 
+            builder.Services.AddScoped<Feature>();
 
+            builder.Services.AddFluxor(options =>
+                {
+                    options.ScanAssemblies(Assembly.GetExecutingAssembly(), typeof(State).Assembly);
+                    options.UseReduxDevTools();
+
+                }
+            );
+
+            builder.Services.AddAntDesign();
 
             await builder.Build().RunAsync();
         }

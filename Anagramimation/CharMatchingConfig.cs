@@ -51,11 +51,11 @@ public class CharMatchingConfig
                 }).ToDictionary(x => (x.a, x.b), x => x.match);
 
 
-    public bool CaseSensitive { get; set; }
+    public bool CaseSensitive { get; set; } = false;
 
-    public bool AllowRotation { get; set; }
+    public bool AllowRotation { get; set; } = true;
 
-    public bool AllowReflection { get; set; }
+    public bool AllowReflection { get; set; } = true;
 }
 
 }

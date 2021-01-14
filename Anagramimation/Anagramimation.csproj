@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Fluxor" Version="3.9.0" />
     <PackageReference Include="OneOf" Version="3.0.163" />
   </ItemGroup>
 

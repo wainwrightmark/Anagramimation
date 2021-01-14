@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anagramimation.Tests", "Anagranimation.Tests\Anagramimation.Tests.csproj", "{9A1A8A0E-7A08-4394-9E85-11B00261337B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anagramimation.Blazor", "Anagramimation.Blazor\Anagramimation.Blazor.csproj", "{7F9A24D0-D855-4584-BD58-A1DBD920A91F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anagramimation.Blazor", "Anagramimation.Blazor\Anagramimation.Blazor.csproj", "{7F9A24D0-D855-4584-BD58-A1DBD920A91F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

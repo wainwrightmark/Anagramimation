@@ -1,13 +1,15 @@
 ﻿@using System.Collections.Immutable
 @using System.Text
+@using Fluxor
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 
 <div class="area ">
 
     <div class="word">
-        @foreach (var path in Paths)
+        @foreach (var path in State.Value.WordList.Paths)
         {
-            var style = path.GetStyle(Config, Animate);
+            var style = path.GetStyle(State.Value.Config, State.Value.StepConfigs);
 
             <span class="letter" style="@style">@path.Letter</span>
         }
@@ -19,16 +21,15 @@
 <style>
     .area {
         position: relative;
-        font-size: @(Config.SpacingPixels + "px");
-
-        height: @((Config.SpacingPixels * Config.HeightFactor * 2) + "px");
-        width: @((Config.SpacingPixels * Paths.Count) +"px");
+        font-size: @(State.Value.Config.FontPixels + "px");
+        height: @(State.Value.Config.GetHeight(State.Value.StepConfigs) + "px");
+        width: @(State.Value.Config.GetWidth(State.Value.WordList) +"px");
     }
 
     .word {
         position: absolute;
-        top:@((Config.SpacingPixels * Config.HeightFactor) + "px");
-        right: @(Config.SpacingPixels + "px");
+        top:@(((State.Value.Config.GetHeight(State.Value.StepConfigs) - State.Value.Config.FontPixels) / 2) + "px");
+        left: @(State.Value.Config.FontPixels + "px");
     }
 
     .letter {
@@ -38,10 +39,10 @@
 
 
 
-    @foreach (var path in Paths)
+    @foreach (var path in State.Value.WordList.Paths)
     {
         <text>
-            @path.GetAnimationDefinition(Config)
+            @path.GetAnimationDefinition(State.Value.Config,State.Value.StepConfigs, State.Value.WordList.WordLengths)
         </text>
     }
 
@@ -50,61 +51,7 @@
 
 @code {
 
-    [Parameter]
-    public string Word1 { get; set; }
+    [Inject]
+    private IState<State> State { get; set; }
 
-    [Parameter]
-    public string Word2 { get; set; }
-
-    [Parameter]
-    public bool Animate { get; set; }
-
-    [Parameter]
-    public AnimationConfig Config { get; set; }
-
-    [Parameter]
-    public CharMatchingConfig CharMatchingConfig { get; set; }
-
-    /// <inheritdoc />
-    protected override void OnParametersSet()
-    {
-        var (newList1, newList2) = LetterPairer.PairUp(Word1, Word2, CharMatchingConfig);
-
-        Paths = LetterPairer.CreatePathArray(newList1, newList2);
-
-        base.OnParametersSet();
-    }
-
-    public ImmutableList<Path> Paths { get; set; }
-
-    public string GetHtml()//TODO update
-    {
-        var sb = new StringBuilder();
-
-        sb.AppendLine("<div class=\"area\">");
-        foreach (var path in Paths)
-        {
-            var style = path.GetStyle(Config, Animate);
-
-            sb.AppendLine($"<span class=\"letter\" style=\"{style}\">{path.Letter}</span>");
-        }
-        sb.AppendLine("</div>");
-
-
-
-
-
-        sb.AppendLine("<style>");
-        sb.AppendLine("\t.letter { position: absolute; }");
-        sb.AppendLine($".area {{font-family: monospace;font-size: {Config.SpacingPixels}px;position: relative;top: {(Config.SpacingPixels * 2)}px;}}");
-
-
-        foreach (var path in Paths)
-        {
-            sb.AppendLine(path.GetAnimationDefinition(Config));
-        }
-        sb.AppendLine("</style>");
-
-        return sb.ToString();
-    }
 }

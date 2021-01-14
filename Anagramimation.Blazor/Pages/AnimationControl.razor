@@ -1,129 +1,67 @@
-﻿<p>
-    <Animation @ref="Animation" Animate="@Animate" CharMatchingConfig="@CharMatchConfig" Config="@Config" Word1="@(Word1 ?? PlaceHolderWord1)" Word2="@(Word2 ?? PlaceHolderWord2)"></Animation>
-</p>
+﻿@using Fluxor
+@using System.Security.Cryptography.X509Certificates
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-<p>
-    <MatTextField OnFocus="() => Animate = false" OnFocusOut="() => Animate = true" @bind-Value="@Word1" PlaceHolder="@PlaceHolderWord1" Label="First"></MatTextField>
-    <MatTextField OnFocus="() => Animate = false" OnFocusOut="() => Animate = true" @bind-Value="@Word2" PlaceHolder="@PlaceHolderWord2" Label="Second"></MatTextField>
-</p>
+<Animation/>
+
+@for (var i = 0; i < State.Value.StepConfigs.Count; i++)
+{
+    var index = i;
+    <WordControl Index="@index" />
+}
+<Button OnClick="@(() => Dispatcher.Dispatch(new AddAction("Hello", new AnimationStepConfig())))">+</Button>
 
 
 <div>
-    <div>
-    <p>
-        <label>Spacing</label>
-        <MatSlider Immediate="true" Discrete="true" Pin="true" ValueMin="1" ValueMax="100" @bind-Value="@Config.SpacingPixels"/>
-    </p>
+    <InputGroup>
+        <Col>
+            <Tag>Font @State.Value.Config.FontPixels</Tag>
+            <Slider Dots="true" Min="1" Max="100" Step="1" OnChange="@(v=>Dispatch(x=>x with{FontPixelsDouble=v}))" Value="@State.Value.Config.FontPixelsDouble"/>
+            <Tag>Width @State.Value.Config.RelativeWidth</Tag>
+            <Slider Min="0" Max="3" OnChange="@(v=>Dispatch(x=>x with{RelativeWidth= v}))" Value="@State.Value.Config.RelativeWidth"/>
+            <Select
+                TItem="AnimationTiming"
+                TItemValue="AnimationTiming"
+                OnSelectedItemChanged="@(v=>Dispatch(x=>x with{Timing= v}))"
+                Value="@State.Value.Config.Timing">
+                <SelectOptions>
+                    @foreach (var v in Enum.GetValues<AnimationTiming>())
+                    {
+                        <SelectOption TItem="AnimationTiming" TItemValue="AnimationTiming" Value="@v" Label="@v.ToString()"/>
+                    }
+                </SelectOptions>
+            </Select>
+        </Col>
 
-    <p>
-        <label>Duration</label>
-        <MatSlider Immediate="true" Discrete="true" Pin="true" ValueMin="1" ValueMax="20" @bind-Value="@Config.DurationSeconds"/>
-    </p>
-
-    <p>
-        <label>Height</label>
-        <MatSlider Immediate="true" Discrete="true" Pin="true" ValueMin="0" ValueMax="10" @bind-Value="@Config.HeightFactor"/>
-    </p>
-
-    <p>
-        <label>Rest</label>
-        <MatSlider Immediate="true" Discrete="true" Pin="true" ValueMin="0" ValueMax="50" @bind-Value="@Config.RestPercent"/>
-    </p>
-
-
-    <p>
-        <MatSelect Label="Timing" @bind-Value="@Timing">
-            @foreach (var timing in Enum.GetValues<AnimationTiming>())
-            {
-                <MatOption Value="@timing.ToString()">@timing</MatOption>
-            }
-        </MatSelect>
-    </p>
-    <p>
-        <MatSelect Label="PathFinding" @bind-Value="@PFinding">
-            @foreach (var timing in Enum.GetValues<PathFinding>())
-            {
-                <MatOption Value="@timing.ToString()">@timing</MatOption>
-            }
-        </MatSelect>
-    </p>
-    <p>
-        <MatButton OnClick="@(e => { dialogIsOpen = true; })" Raised="true">HTML</MatButton>
-
-    </p>
-
-    <p>
-        <MatDialog @bind-IsOpen="@dialogIsOpen">
-            <MatDialogTitle>HTML</MatDialogTitle>
-            <MatDialogContent>
-                <p>
-                    @Animation.GetHtml()
-                </p>
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="@(e => { dialogIsOpen = false; })">x</MatButton>
-            </MatDialogActions>
-        </MatDialog>
-    </p>
-        </div>
+    </InputGroup>
+    <Paragraph Copyable CopyConfig="@(new TypographyCopyableConfig(){Text = State.Value.GetHtml()})" Editable="false">
+        HTML
+    </Paragraph>
+    <Button OnClick="Sync">Sync</Button>
 </div>
 
 
 @code {
 
-    public Animation Animation;
-    bool dialogIsOpen = false;
 
-        public const string PlaceHolderWord1 = "animate";
-        public const string PlaceHolderWord2 = "anagram";
+    [Inject]
+    private IState<State> State { get; set; }
 
-    public bool Animate { get; set; } = true;
+    [Inject]
+    public IDispatcher Dispatcher { get; set; }
 
-    [Parameter]
-    public string? Word1 { get; set; }
-
-    [Parameter]
-    public string? Word2 { get; set; }
-
-    public string Timing
+    private void Dispatch(Func<AnimationGlobalConfig, AnimationGlobalConfig> func)
     {
-        get => Config.Timing.ToString();
-        set
-        {
-            if (Enum.TryParse(value, true, out AnimationTiming v))
-            {
-                Config.Timing = v;
-            }
-        }
+        var action = new SetGlobalConfigAction(func);
+        Dispatcher.Dispatch(action);
     }
 
-    public string PFinding
+    private async void Sync()
     {
-        get => Config.PathFinding.ToString();
-        set
-        {
-            if (Enum.TryParse(value, true, out PathFinding v))
-            {
-                Config.PathFinding = v;
-            }
-        }
+        Dispatch(x=>x with{Enable = false});
+        await Task.Delay(100);
+        Dispatch(x => x with{Enable = true});
     }
 
-    public CharMatchingConfig CharMatchConfig = new()
-    {
-        CaseSensitive = false,
-        AllowReflection = true,
-        AllowRotation = true
-    };
-
-    public AnimationConfig Config = new()
-    {
-        SpacingPixels = 30,
-        Timing = AnimationTiming.linear,
-        DurationSeconds = 3,
-        HeightFactor = 2,
-        RestPercent = 20,
-        PathFinding = PathFinding.Factory
-    };
 
 }
