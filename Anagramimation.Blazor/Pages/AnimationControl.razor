@@ -1,5 +1,4 @@
 ﻿@using Fluxor
-@using System.Security.Cryptography.X509Certificates
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <Animation/>
@@ -9,16 +8,16 @@
     var index = i;
     <WordControl Index="@index" />
 }
-<Button OnClick="@(() => Dispatcher.Dispatch(new AddAction("Hello", new AnimationStepConfig())))">+</Button>
+<Button OnClick="AddNew">+</Button>
 
 
 <div>
     <InputGroup>
         <Col>
             <Tag>Font @State.Value.Config.FontPixels</Tag>
-            <Slider Dots="true" Min="1" Max="100" Step="1" OnChange="@(v=>Dispatch(x=>x with{FontPixelsDouble=v}))" Value="@State.Value.Config.FontPixelsDouble"/>
+            <Slider TooltipVisible="true" Dots="true" Min="1" Max="100" Step="1" OnChange="@(v=>Dispatch(x=>x with{FontPixelsDouble=v}))" Value="@State.Value.Config.FontPixelsDouble"/>
             <Tag>Width @State.Value.Config.RelativeWidth</Tag>
-            <Slider Min="0" Max="3" OnChange="@(v=>Dispatch(x=>x with{RelativeWidth= v}))" Value="@State.Value.Config.RelativeWidth"/>
+            <Slider TooltipVisible="true" Min="0" Max="3" OnChange="@(v=>Dispatch(x=>x with{RelativeWidth= v}))" Value="@State.Value.Config.RelativeWidth"/>
             <Select
                 TItem="AnimationTiming"
                 TItemValue="AnimationTiming"
@@ -58,9 +57,16 @@
 
     private async void Sync()
     {
-        Dispatch(x=>x with{Enable = false});
+        Dispatch(x=>x with{EnableAnimation = false});
         await Task.Delay(100);
-        Dispatch(x => x with{Enable = true});
+        Dispatch(x => x with{EnableAnimation = true});
+    }
+
+    public void AddNew()
+    {
+        var i = State.Value.WordList.Words.Count;
+        var word = Anagramimation.State.InitialValues[i].Word;
+        Dispatcher.Dispatch(new AddAction(word, new AnimationStepConfig()));
     }
 
 

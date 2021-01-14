@@ -7,7 +7,7 @@ namespace Anagramimation
 
 public record AnimationGlobalConfig
 {
-    public bool Enable { get; init; } = true;
+    public bool EnableAnimation { get; init; } = true;
 
     public AnimationTiming Timing { get; init; } = AnimationTiming.linear;
 

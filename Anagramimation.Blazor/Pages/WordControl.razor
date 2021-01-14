@@ -3,24 +3,31 @@
 
 
 
-<Input AllowClear="true" Value="@Word" TValue="String" OnChange="@(WordChanged)" Placeholder="Try Typing Your Name"/>
+<Input AllowClear="true" Value="@Word" TValue="String" OnChange="@(WordChanged)" Placeholder="@(Anagramimation.State.InitialValues[Index].PlaceHolder)"/>
+<Button OnClick="Close">x</Button>
 <Collapse>
     <Panel Header="Advanced">
         <InputGroup>
             <Col>
 
-                <Tag>Duration @Config.DurationSecondsDouble</Tag>
-                <Slider Dots="true" Min="1" Max="10" Step="1" OnChange="@(v=>Dispatch(x=>x with{DurationSecondsDouble= v}))" Value="@Config.DurationSecondsDouble"/>
-                <Tag>Max Height @Config.MaxHeightFactor</Tag>
-                <Slider Dots="true" Min="0" Max="3" Step="0.1" OnChange="@(v=>Dispatch(x=>x with{MaxHeightFactor= v}))" Value="@Config.MaxHeightFactor"/>
-                <Tag>Min Height @Config.MinHeightFactor</Tag>
-                <Slider Dots="true" Min="0" Max="3" Step="0.1" OnChange="@(v=>Dispatch(x=>x with{MinHeightFactor= v}))" Value="@Config.MinHeightFactor"/>
+                <Tag>Duration @Config.DurationSecondsDouble.ToString("G2")</Tag>
+                <Slider TooltipVisible="true" Dots="true" Min="1" Max="10" Step="1" OnChange="@(v=>Dispatch(x=>x with{DurationSecondsDouble= v}))" Value="@Config.DurationSecondsDouble"/>
+                <Tag>Max Height @Config.MaxHeightFactor.ToString("G2")</Tag>
+                <Slider TooltipVisible="true"
+                        TValue="(double, double)"
+                        Dots="true"
+                        Min="0"
+                        Max="5"
+                        Step="0.2"
+                        DefaultValue="(AnimationStepConfig.DefaultMinHeight,AnimationStepConfig.DefaultMaxHeight)"
+                        OnChange="@((v)=>Dispatch(x=>x with{MinHeightFactor = v.Item1,MaxHeightFactor= v.Item2}))"
+                        />
 
                 @for(var i = 1; i <= Config.Pattern.NumberOfWaypoints; i++)
                 {
                     var index = i;
-                    <Tag>Waypoint @index @(Config.GetWaypoint(index))</Tag>
-                    <Slider Dots="true" Min="0" Max="1" Step="0.05"
+                    <Tag>Waypoint @index @(Config.GetWaypoint(index).ToString("G2"))</Tag>
+                    <Slider TooltipVisible="true" Dots="true" Min="0" Max="1" Step="0.05"
                             OnChange="@(v=> Dispatch(c=>c.SetWaypoint(index,v)))"
                             Value="@(Config.GetWaypoint(index))"/>
                 }
@@ -71,6 +78,11 @@
     {
         var action = new SetConfigAction(Index, func);
         Dispatcher.Dispatch(action);
+    }
+
+    public void Close()
+    {
+        Dispatcher.Dispatch(new RemoveWordAction(Index));
     }
 
 }

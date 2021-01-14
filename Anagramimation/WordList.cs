@@ -74,10 +74,10 @@ namespace Anagramimation
 
                 if (possibleMatches.Any())
                 {
-                    var m = possibleMatches.Single();
-                    remainingLetters.Remove(m.other);
-                    newPath = path with { Nodes = path.Nodes.Add(new Node(m.other.index, m.match.Reflect, m.match.DegreesRotation)) };
-                    newPathWord.Add((rune, newPath, m.other.index));
+                    var (other, match) = possibleMatches.Single();
+                    remainingLetters.Remove(other);
+                    newPath = path with { Nodes = path.Nodes.Add(new Node(other.index, match.Reflect, match.DegreesRotation)) };
+                    newPathWord.Add((rune, newPath, other.index));
                 }
                 else
                 {
@@ -89,7 +89,7 @@ namespace Anagramimation
 
             var emptyNodes = Enumerable.Repeat(null as Node, RunePaths.Count).ToImmutableList();
 
-            foreach (var (rune, index) in remainingLetters)
+            foreach (var (rune, index) in remainingLetters) //TODO pair up with remaining paths
             {
                 var newNode = new Node(index, false, 0);
                 var path = new Path(rune, emptyNodes.Add(newNode));

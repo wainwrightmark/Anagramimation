@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Anagramimation
 {
@@ -18,11 +19,14 @@ public record AnimationStepConfig
 
     public bool Clockwise { get; init; }
 
-    public double Waypoint1 { get; init; } = 0.1;
-    public double Waypoint2 { get; init; } = 0.3;
-    public double Waypoint3 { get; init; } = 0.5;
-    public double Waypoint4 { get; init; } = 0.7;
-    public double Waypoint5 { get; init; } = 0.9;
+    public double Waypoint1 { get; init; } = 0.4;
+    public double Waypoint2 { get; init; } = 0.7;
+    public double Waypoint3 { get; init; } = 0.8;
+    public double Waypoint4 { get; init; } = 0.9;
+    public double Waypoint5 { get; init; } = 0.95;
+
+    public const double DefaultMinHeight = 1;
+    public const double DefaultMaxHeight = 2;
 
     public double MaxHeightFactor { get; init; } = 2;
     public double MinHeightFactor { get; init; } = 1;

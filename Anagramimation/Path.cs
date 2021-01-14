@@ -68,7 +68,7 @@ public record Path(Rune Letter, ImmutableList<Node?> Nodes)
 
         var style = animationPoint.Style;
 
-        if (globalConfig.Enable)
+        if (globalConfig.EnableAnimation)
         {
             var summary = GetAnimationSummary(globalConfig, stepConfigs);
             style += $"\r\nanimation:{summary}";
@@ -118,7 +118,7 @@ public record Path(Rune Letter, ImmutableList<Node?> Nodes)
                 currentPercentage + (stepConfig.DurationSeconds * 100 / totalDuration);
 
             if (node == null)
-                yield return AnimationPoint.Invisible with { Percentage = currentPercentage, Left = left};
+                yield return AnimationPoint.Invisible with { Percentage = currentPercentage, Left = left};//TODO factor in rest points
             else
             {
                 var nextNodeIndex = i + 1 >= Nodes.Count ? 0 : i + 1;
