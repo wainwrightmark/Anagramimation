@@ -25,9 +25,26 @@ public abstract record Pattern(string Name, int NumberOfWaypoints, PatternEnum P
 
     public static Pattern GetPattern(PatternEnum pe) => GetAll().Single(x => x.PatternEnum == pe);
 
+
+    public abstract string GetWaypointName(int i);
+
+    private static string DefaultWaypointName(int i) => $"Waypoint {i}";
+
+
     public record Direct() : Pattern(nameof(Direct), 2, PatternEnum.Direct)
     {
         public static Direct Instance { get; } = new();
+
+        /// <inheritdoc />
+        public override string GetWaypointName(int i)
+        {
+            return i switch
+            {
+                1 => "Rest",
+                2 => "Top",
+                _ => DefaultWaypointName(i)
+            };
+        }
 
         /// <inheritdoc />
         public override IEnumerable<AnimationPoint> GetStepPoints(
@@ -131,14 +148,38 @@ public abstract record Pattern(string Name, int NumberOfWaypoints, PatternEnum P
             yield return aboveStart;     //above start
             yield return aboveEnd;       //Above end
         }
-    }
+
+            /// <inheritdoc />
+            public override string GetWaypointName(int i)
+            {
+                return i switch
+                {
+                    1 => "Rest",
+                    2 => "Above Start",
+                    3 => "Above End",
+                    _ => DefaultWaypointName(i)
+            };
+            }
+        }
 
     public record Explosion() : Pattern(nameof(Explosion), 3, PatternEnum.Explosion)
     {
         public static Explosion Instance { get; } = new();
 
-        /// <inheritdoc />
-        public override IEnumerable<AnimationPoint> GetStepPoints(
+            /// <inheritdoc />
+            public override string GetWaypointName(int i)
+            {
+                return i switch
+                {
+                    1 => "Rest",
+                    2 => "Compress",
+                    3 => "Explode",
+                    _ => DefaultWaypointName(i)
+            };
+            }
+
+            /// <inheritdoc />
+            public override IEnumerable<AnimationPoint> GetStepPoints(
             AnimationGlobalConfig globalConfig,
             AnimationStepConfig stepConfig,
             int totalLength,

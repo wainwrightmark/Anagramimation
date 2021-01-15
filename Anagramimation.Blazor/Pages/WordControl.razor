@@ -32,7 +32,7 @@
                 @for(var i = 1; i <= Config.Pattern.NumberOfWaypoints; i++)
                 {
                     var index = i;
-                    <Tag>Waypoint @index @(Config.GetWaypoint(index).ToString("G2"))</Tag>
+                    <Tag>@Config.Pattern.GetWaypointName(index) @(Config.GetWaypoint(index).ToString("G2"))</Tag>
                     <Slider TooltipVisible="true" Dots="true" Min="0" Max="1" Step="0.05"
                             OnChange="@(v=> Dispatch(c=>c.SetWaypoint(index,v)))"
                             Value="@(Config.GetWaypoint(index))"/>
@@ -46,22 +46,9 @@
                     Size="small">
                     @foreach (var v in Enum.GetValues<PatternEnum>())
                     {
-                        <Radio RadioButton Value="@v">v.ToString()</Radio>
+                        <Radio RadioButton Value="@v">@v.ToString()</Radio>
                     }
                 </RadioGroup>
-
-
-                @*<Select
-                TItem="PatternEnum"
-                TItemValue="PatternEnum"
-                OnSelectedItemChanged="@SetPattern"
-                Value="@Config.Pattern.PatternEnum">
-                <SelectOptions>
-                    @foreach (var v in Enum.GetValues<PatternEnum>())
-                    {
-                        <SelectOption TItem="PatternEnum" TItemValue="PatternEnum" Value="@v" Label="@v.ToString()"/>
-                    }
-                </SelectOptions></Select>*@
 
             </Col>
 
