@@ -8,8 +8,6 @@
     var index = i;
     <WordControl Index="@index" />
 }
-<Button OnClick="AddNew">+</Button>
-
 
 <div>
     <InputGroup>
@@ -36,7 +34,6 @@
     <Paragraph Copyable CopyConfig="@(new TypographyCopyableConfig(){Text = State.Value.GetHtml()})" Editable="false">
         HTML
     </Paragraph>
-    @*<Button OnClick="Sync">Sync</Button>*@
 </div>
 
 
@@ -54,21 +51,4 @@
         var action = new SetGlobalConfigAction(func);
         Dispatcher.Dispatch(action);
     }
-
-    //private async void Sync()
-    //{
-    //    Dispatch(x=>x with{EnableAnimation = false});
-    //    await Task.Delay(100);
-    //    Dispatch(x => x with{EnableAnimation = true});
-    //}
-
-    public void AddNew()
-    {
-        var i = State.Value.WordList.Words.Count;
-        var word = Defaults.GetWord(i);
-        var config = Defaults.GetStepConfig(i);
-        Dispatcher.Dispatch(new AddAction(word, config));
-    }
-
-
 }

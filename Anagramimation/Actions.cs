@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Fluxor;
 
@@ -10,7 +11,12 @@ public interface IAction
     State Reduce(State state);
 }
 
-public record SetWordAction(int Index, string Word) : IAction
+public interface IWordChangedAction : IAction
+    {
+        int Index{get;}
+    }
+
+public record SetWordAction(int Index, string Word) :  IWordChangedAction
 {
     /// <inheritdoc />
     public State Reduce(State state)
@@ -27,40 +33,41 @@ public record SetWordAction(int Index, string Word) : IAction
     }
 }
 
-    public class SetWordEffect : Effect<SetWordAction>
+    public class SetWordEffect : Effect<IWordChangedAction>
     {
         /// <inheritdoc />
-        protected override async Task HandleAsync(SetWordAction action, IDispatcher dispatcher)
+        protected override async Task HandleAsync(IWordChangedAction action, IDispatcher dispatcher)
         {
             dispatcher.Dispatch(new PauseAnimateAction());
             await ValueTask.CompletedTask;
+            await Task.Delay(100);
+            dispatcher.Dispatch(new RestoreAnimateAction(action.Index));
         }
     }
 
 
     public record PauseAnimateAction : IAction
     {
-        /// <inheritdoc />
-        public State Reduce(State state) => state with { Config = state.Config with { EnableAnimation = false } };
+        /// <inheritdoc />b 
+        public State Reduce(State state) => state with { Config = state.Config with { EnableAnimation = false} };
     }
 
-    public record RestoreAnimateAction : IAction
+    public record RestoreAnimateAction(int AnimationDelayIndex) : IAction
     {
-        public State Reduce(State state) => state with { Config = state.Config with { EnableAnimation = true } };
-    }
-
-    public class PauseAnimateEffect : Effect<PauseAnimateAction>
-    {
-        /// <inheritdoc />
-        protected override async Task HandleAsync(PauseAnimateAction action, IDispatcher dispatcher)
+        public State Reduce(State state)
         {
-            await Task.Delay(100);
-            dispatcher.Dispatch(new RestoreAnimateAction());
+            var totalDelay = state.StepConfigs
+                .Take(AnimationDelayIndex)
+                .Select(x => x.DurationSeconds)
+                .DefaultIfEmpty(0)
+                .Sum();
+
+            return state with { Config = state.Config with { EnableAnimation = true, AnimationDelaySeconds = totalDelay} };
         }
     }
 
 
-    public record RemoveWordAction(int Index) : IAction
+    public record RemoveWordAction(int Index) : IWordChangedAction
 {
     /// <inheritdoc />
     public State Reduce(State state)
@@ -78,18 +85,21 @@ public record SetWordAction(int Index, string Word) : IAction
         }
 }
 
-public record AddAction(string Word, AnimationStepConfig Config) : IAction
+public record AddAction(string Word, int Index, AnimationStepConfig Config) : IWordChangedAction
 {
     /// <inheritdoc />
     public State Reduce(State state)
     {
+
+        var newWords = state.WordList.Words.Insert(Index, Word);
+
         state = state with
         {
-            WordList = state.WordList.AddWord(Word, state.CharMatchingConfig),
-            StepConfigs = state.StepConfigs.Add(Config)
+            WordList = WordList.Create(newWords, state.CharMatchingConfig),
+            StepConfigs = state.StepConfigs.Insert(Index, Config)
         };
 
-        return state;//Todo set animation delay
+        return state;
     }
 }
 

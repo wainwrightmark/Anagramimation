@@ -10,6 +10,7 @@
        Placeholder="@(Defaults.GetPlaceHolder(Index))"
 />
 <Button OnClick="Close">x</Button>
+<Button OnClick="AddNew">+</Button>
 <Collapse>
     <Panel Header="Advanced">
         <InputGroup>
@@ -38,8 +39,19 @@
                 }
 
 
+                <RadioGroup
+                    TValue="PatternEnum"
+                    OnChange="@(SetPattern)"
+                    Value="@Config.Pattern.PatternEnum"
+                    Size="small">
+                    @foreach (var v in Enum.GetValues<PatternEnum>())
+                    {
+                        <Radio RadioButton Value="@v">v.ToString()</Radio>
+                    }
+                </RadioGroup>
 
-                <Select
+
+                @*<Select
                 TItem="PatternEnum"
                 TItemValue="PatternEnum"
                 OnSelectedItemChanged="@SetPattern"
@@ -49,8 +61,8 @@
                     {
                         <SelectOption TItem="PatternEnum" TItemValue="PatternEnum" Value="@v" Label="@v.ToString()"/>
                     }
-                </SelectOptions>
-            </Select>
+                </SelectOptions></Select>*@
+
             </Col>
 
         </InputGroup>
@@ -78,6 +90,14 @@
     {
         if(w != Word)
             Dispatcher.Dispatch(new SetWordAction(Index, w??""));
+    }
+
+    public void AddNew()
+    {
+        var i = State.Value.WordList.Words.Count;
+        var word = Defaults.GetWord(i);
+        var config = Defaults.GetStepConfig(i);
+        Dispatcher.Dispatch(new AddAction(word, Index + 1, config));
     }
 
     private void Dispatch(Func<AnimationStepConfig, AnimationStepConfig> func)

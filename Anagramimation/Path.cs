@@ -72,6 +72,8 @@ public record Path(Rune Rune, ImmutableList<Node?> Nodes)
         {
             var summary = GetAnimationSummary(globalConfig, stepConfigs);
             style += $"\r\nanimation:{summary}";
+            if(globalConfig.AnimationDelaySeconds > 0)
+                style += $"animation-delay: -{globalConfig.AnimationDelaySeconds}s;";
         }
 
         return style;

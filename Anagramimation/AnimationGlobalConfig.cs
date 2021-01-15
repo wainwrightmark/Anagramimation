@@ -9,6 +9,8 @@ public record AnimationGlobalConfig
 {
     public bool EnableAnimation { get; init; } = true;
 
+    public int AnimationDelaySeconds { get; init; }
+
     public AnimationTiming Timing { get; init; } = AnimationTiming.linear;
 
     public int FontPixels { get; init; } = 30;
