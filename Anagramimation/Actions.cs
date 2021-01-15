@@ -30,7 +30,11 @@ public record SetWordAction(int Index, string Word) : IAction
     public class SetWordEffect : Effect<SetWordAction>
     {
         /// <inheritdoc />
-        protected override async Task HandleAsync(SetWordAction action, IDispatcher dispatcher) => dispatcher.Dispatch(new PauseAnimateAction());
+        protected override async Task HandleAsync(SetWordAction action, IDispatcher dispatcher)
+        {
+            dispatcher.Dispatch(new PauseAnimateAction());
+            await ValueTask.CompletedTask;
+        }
     }
 
 
@@ -85,7 +89,7 @@ public record AddAction(string Word, AnimationStepConfig Config) : IAction
             StepConfigs = state.StepConfigs.Add(Config)
         };
 
-        return state;
+        return state;//Todo set animation delay
     }
 }
 

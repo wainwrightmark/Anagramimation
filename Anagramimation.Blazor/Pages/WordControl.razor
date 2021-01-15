@@ -7,7 +7,7 @@
        Value="@Word"
        TValue="String"
        OnChange="@(WordChanged)"
-       Placeholder="@(Anagramimation.State.InitialValues[Index].PlaceHolder)"
+       Placeholder="@(Defaults.GetPlaceHolder(Index))"
 />
 <Button OnClick="Close">x</Button>
 <Collapse>
@@ -62,10 +62,10 @@
 {
 
     [Inject]
-    private IState<State> State { get; set; }
+    private IState<State> State { get; set; } = null!;
 
     [Inject]
-    public IDispatcher Dispatcher { get; set; }
+    public IDispatcher Dispatcher { get; set; } = null!;
 
     [Parameter]
     public int Index { get; set; }
@@ -76,7 +76,8 @@
 
     private void WordChanged(string w)
     {
-        Dispatcher.Dispatch(new SetWordAction(Index, w??""));
+        if(w != Word)
+            Dispatcher.Dispatch(new SetWordAction(Index, w??""));
     }
 
     private void Dispatch(Func<AnimationStepConfig, AnimationStepConfig> func)
@@ -87,6 +88,8 @@
 
     public void SetPattern(PatternEnum patternEnum)
     {
+        if (Config.Pattern.PatternEnum == patternEnum)
+            return;
         var pattern = Pattern.GetPattern(patternEnum);
         var action = new SetConfigAction(Index, x=> x with{Pattern = pattern});
         Dispatcher.Dispatch(action);

@@ -36,7 +36,7 @@ public class UnitTest1
             "",
             wordList.Paths.Where(x => x.Nodes[0] != null)
                 .OrderBy(x => x.Nodes[0]!.RuneIndex)
-                .Select(x => x.Letter)
+                .Select(x => x.Rune)
                 .ToList()
         );
 
@@ -44,7 +44,7 @@ public class UnitTest1
             "",
             wordList.Paths.Where(x => x.Nodes[1] != null)
                 .OrderBy(x => x.Nodes[1]!.RuneIndex)
-                .Select(x => x.Letter)
+                .Select(x => x.Rune)
                 .ToList()
         );
 
@@ -102,7 +102,7 @@ public class UnitTest1
         foreach (var wordListPath in state.WordList.Paths)
         {
             TestOutputHelper.WriteLine("");
-            TestOutputHelper.WriteLine(wordListPath.Letter.ToString());
+            TestOutputHelper.WriteLine(wordListPath.Rune.ToString());
             TestOutputHelper.WriteLine("");
 
             foreach (var animationPoint in wordListPath.GetAnimationPoints(
@@ -133,7 +133,7 @@ public class UnitTest1
         foreach (var wordListPath in state.WordList.Paths)
         {
             TestOutputHelper.WriteLine("");
-            TestOutputHelper.WriteLine(wordListPath.Letter.ToString());
+            TestOutputHelper.WriteLine(wordListPath.Rune.ToString());
             TestOutputHelper.WriteLine("");
 
             foreach (var animationPoint in wordListPath.GetAnimationPoints(
@@ -145,9 +145,56 @@ public class UnitTest1
                 TestOutputHelper.WriteLine(animationPoint.ToString());
             }
         }
+
+        state.WordList.Paths.Should().HaveCount(3);
+
+        foreach (var wordListPath in state.WordList.Paths)
+        {
+            wordListPath.Nodes.Should().HaveCount(3);
+            wordListPath.Nodes.Where(x=>x != null) .Should().HaveCount(2);
+
+            foreach (var animationPoint in wordListPath.GetAnimationPoints(state.Config, state.StepConfigs, state.WordList.WordLengths))
+            {
+                (animationPoint.Rotation ?? 0).Should().Be(0);
+                (animationPoint.Reflect ?? false).Should().Be(false);
+            }
+        }
     }
 
-    [Fact]
+
+        [Theory]
+        [InlineData("p", "a", "d", "p")]
+        public void Test4WordPath(string word1, string word2, string word3, string word4)
+        {
+            var words = new List<string>() { word1, word2, word3, word4 }.ToImmutableList();
+            var wordlist = WordList.Create(words, new CharMatchingConfig());
+
+            var state = new State(
+                wordlist,
+                new CharMatchingConfig(),
+                new AnimationGlobalConfig(),
+                Enumerable.Repeat(new AnimationStepConfig(), 4).ToImmutableList()
+            );
+
+            foreach (var wordListPath in state.WordList.Paths)
+            {
+                TestOutputHelper.WriteLine("");
+                TestOutputHelper.WriteLine(wordListPath.Rune.ToString());
+                TestOutputHelper.WriteLine("");
+
+                foreach (var animationPoint in wordListPath.GetAnimationPoints(
+                    state.Config,
+                    state.StepConfigs,
+                    state.WordList.WordLengths
+                ))
+                {
+                    TestOutputHelper.WriteLine(animationPoint.ToString());
+                }
+            }
+        }
+
+
+        [Fact]
     public void TestHtml()
     {
         var state = new Feature().State;

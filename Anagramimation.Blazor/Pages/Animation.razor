@@ -11,7 +11,7 @@
         {
             var style = path.GetStyle(State.Value.Config, State.Value.StepConfigs);
 
-            <span class="letter" style="@style">@path.Letter</span>
+            <span class="letter" style="@style">@path.Rune</span>
         }
     </div>
 
@@ -19,6 +19,8 @@
 
 
 <style>
+
+    @@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
     .area {
         position: relative;
         font-size: @(State.Value.Config.FontPixels + "px");
@@ -32,10 +34,7 @@
         left: @(State.Value.Config.FontPixels + "px");
     }
 
-    .letter {
-        position: absolute;
-        font-family: monospace;
-    }
+    .letter { position: absolute; font-family: 'Share Tech Mono', monospace, sans-serif;}
 
 
 
@@ -46,12 +45,14 @@
         </text>
     }
 
+
+
 </style>
 
 
 @code {
 
     [Inject]
-    private IState<State> State { get; set; }
+    private IState<State> State { get; set; } = null!;
 
 }

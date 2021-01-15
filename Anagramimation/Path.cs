@@ -19,7 +19,7 @@ public record Node(int RuneIndex, bool Reflect, int RotationDegrees)
     }
 };
 
-public record Path(Rune Letter, ImmutableList<Node?> Nodes)
+public record Path(Rune Rune, ImmutableList<Node?> Nodes)
 {
     public string GetAnimationDefinition(
         AnimationGlobalConfig config,
@@ -42,8 +42,8 @@ public record Path(Rune Letter, ImmutableList<Node?> Nodes)
         {
             var (node, index) = Nodes.Select((x, i) => (x, i)).First(x => x.x != null);
 
-            if (Letter.IsAscii && char.IsLetter((char)Letter.Value))
-                return $"KF_{Letter}_{node!.RuneIndex}_{index}";
+            if (Rune.IsAscii && char.IsLetter((char)Rune.Value))
+                return $"KF_{Rune}_{node!.RuneIndex}_{index}";
             else
                 return $"KF_{node!.RuneIndex}_{index}";
         }

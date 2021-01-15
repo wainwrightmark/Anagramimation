@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Text;
 
 namespace Anagramimation
@@ -11,19 +10,6 @@ public record State(
     AnimationGlobalConfig Config,
     ImmutableList<AnimationStepConfig> StepConfigs)
 {
-
-    public static readonly IReadOnlyList<(string Word, string PlaceHolder)> InitialValues =
-        new List<(string Word, string PlaceHolder)>
-        {
-            ("Animate", "Try Your Name"),
-            ("Anagram", "Try a Similar Word"),
-            ("Maniac", "Be creative!"),
-            ("A n i m a t e", "Try using spaces"),
-            ("🤖 Animate 🤖", "Try Emoji"),
-            ("Animate", "Have fun!"),
-        };
-
-
     public string GetHtml()
     {
         var sb = new StringBuilder();
@@ -34,7 +20,7 @@ public record State(
         {
             var style = path.GetStyle(Config, StepConfigs);
 
-            sb.AppendLine($"<span class=\"letter\" style=\"{style}\">{path.Letter}</span>");
+            sb.AppendLine($"<span class=\"Rune\" style=\"{style}\">{path.Rune}</span>");
         }
 
         sb.AppendLine("</div>");
@@ -42,7 +28,10 @@ public record State(
         //TODO improve
 
         sb.AppendLine("<style>");
-        sb.AppendLine("\t.letter { position: absolute; font-family: monospace; }");
+
+        sb.AppendLine("@import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@500&display=swap');");
+
+        sb.AppendLine("\t.Rune { position: absolute; font-family: 'Maven Pro', sans-serif; }");
         sb.AppendLine($".area {{font-size: {Config.FontPixels}px;position: relative;}}");
         sb.AppendLine($".word {{position: absolute}}");
 

@@ -44,10 +44,10 @@
 
 
     [Inject]
-    private IState<State> State { get; set; }
+    private IState<State> State { get; set; } = null!;
 
     [Inject]
-    public IDispatcher Dispatcher { get; set; }
+    public IDispatcher Dispatcher { get; set; } = null!;
 
     private void Dispatch(Func<AnimationGlobalConfig, AnimationGlobalConfig> func)
     {
@@ -65,8 +65,9 @@
     public void AddNew()
     {
         var i = State.Value.WordList.Words.Count;
-        var word = Anagramimation.State.InitialValues[i].Word;
-        Dispatcher.Dispatch(new AddAction(word, new AnimationStepConfig()));
+        var word = Defaults.GetWord(i);
+        var config = Defaults.GetStepConfig(i);
+        Dispatcher.Dispatch(new AddAction(word, config));
     }
 
 

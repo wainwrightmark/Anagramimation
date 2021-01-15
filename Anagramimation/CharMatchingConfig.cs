@@ -32,13 +32,13 @@ public class CharMatchingConfig
         new List<(char a, char b, CharMatch match)>()
             {
 
-                ( 'b', 'd', new CharMatch(50, true,  0)),
+                ('b', 'd', new CharMatch(50, true,  0)),
                 ('b', 'p', new CharMatch(50, true,  180)),
                 ('d', 'p', new CharMatch(50, false, 180)),
                 ('m', 'w', new CharMatch(50, false, 180)),
                 ('M', 'W', new CharMatch(50, false, 180)),
                 ('u', 'n', new CharMatch(50, false, 180)),
-                ('z', 'n', new CharMatch(50, false, 90)),
+                ('z', 'N', new CharMatch(50, false, 90)),
                 ('u', 'c', new CharMatch(50, false, 90)),
             }
             .Select(x=> (a:new Rune(x.a), b:new Rune(x.b), x.match))
