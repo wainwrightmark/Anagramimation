@@ -8,7 +8,7 @@ public class Feature : Feature<State>
 {
     public override string GetName() => "State";
 
-    protected override State GetInitialState() => new(
+    protected override State GetInitialState() => new(null,
         WordList.Create(new[] { Defaults.GetWord(0) , Defaults.GetWord(1) }, new CharMatchingConfig()),
         new CharMatchingConfig(),
         new AnimationGlobalConfig(),

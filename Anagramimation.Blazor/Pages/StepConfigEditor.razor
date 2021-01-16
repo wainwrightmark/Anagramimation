@@ -1,0 +1,68 @@
+﻿<InputGroup>
+            <Col>
+
+                <Tag>Duration @Config.DurationSecondsDouble.ToString("G2")</Tag>
+                <Slider TooltipVisible="true" Dots="true" Min="1" Max="10" Step="1" OnChange="@(v=>Dispatch(x=>x with{DurationSecondsDouble= v}))" Value="@Config.DurationSecondsDouble"/>
+                <Tag>Max Height @Config.MaxHeightFactor.ToString("G2")</Tag>
+                <Slider TooltipVisible="true"
+                        TValue="(double, double)"
+                        Dots="true"
+                        Min="0"
+                        Max="5"
+                        Step="0.2"
+                        DefaultValue="(AnimationStepConfig.DefaultMinHeight,AnimationStepConfig.DefaultMaxHeight)"
+                        OnChange="@((v)=>Dispatch(x=>x with{MinHeightFactor = v.Item1,MaxHeightFactor= v.Item2}))"
+                        />
+
+                @for(var i = 1; i <= Config.Pattern.NumberOfWaypoints; i++)
+                {
+                    var index = i;
+                    <Tag>@Config.Pattern.GetWaypointName(index) @(Config.GetWaypoint(index).ToString("G2"))</Tag>
+                    <Slider TooltipVisible="true" Dots="true" Min="0" Max="1" Step="0.05"
+                            OnChange="@(v=> Dispatch(c=>c.SetWaypoint(index,v)))"
+                            Value="@(Config.GetWaypoint(index))"/>
+                }
+
+
+                <RadioGroup
+                    TValue="PatternEnum"
+                    OnChange="@(SetPattern)"
+                    Value="@Config.Pattern.PatternEnum"
+                    Size="small">
+                    @foreach (var v in Enum.GetValues<PatternEnum>())
+                    {
+                        <Radio RadioButton Value="@v">@v.ToString()</Radio>
+                    }
+                </RadioGroup>
+
+            </Col>
+
+        </InputGroup>
+
+@code {
+    [Inject]
+    private IState<State> State { get; set; } = null!;
+
+    [Inject]
+    public IDispatcher Dispatcher { get; set; } = null!;
+
+    [Parameter]
+    public int Index { get; set; }
+
+    public AnimationStepConfig Config => State.Value.StepConfigs[Index];
+
+    private void Dispatch(Func<AnimationStepConfig, AnimationStepConfig> func)
+    {
+        var action = new SetConfigAction(Index, func);
+        Dispatcher.Dispatch(action);
+    }
+
+    public void SetPattern(PatternEnum patternEnum)
+    {
+        if (Config.Pattern.PatternEnum == patternEnum)
+            return;
+        var pattern = Pattern.GetPattern(patternEnum);
+        var action = new SetConfigAction(Index, x=> x with{Pattern = pattern});
+        Dispatcher.Dispatch(action);
+    }
+}

@@ -1,60 +1,36 @@
 ﻿@using Fluxor
+@using Anagramimation.Blazor.Flux
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
+<Col>
+    <Input AllowClear="true"
+           Value="@Word"
+           TValue="String"
+           OnChange="@(WordChanged)"
+           Placeholder="@(Defaults.GetPlaceHolder(Index))"/>
+    <Button Icon="close" OnClick="Close"></Button>
+    <Button Icon="plus" OnClick="AddNew"></Button>
+    <Button Icon="edit" OnClick="Edit"></Button>
+</Col>
+
+@*<Row>
+    <Col Span="3">
 
 
-<Input AllowClear="true"
-       Value="@Word"
-       TValue="String"
-       OnChange="@(WordChanged)"
-       Placeholder="@(Defaults.GetPlaceHolder(Index))"
-/>
-<Button OnClick="Close">x</Button>
-<Button OnClick="AddNew">+</Button>
-<Collapse>
-    <Panel Header="Advanced">
-        <InputGroup>
-            <Col>
+    </Col>
+</Row>
 
-                <Tag>Duration @Config.DurationSecondsDouble.ToString("G2")</Tag>
-                <Slider TooltipVisible="true" Dots="true" Min="1" Max="10" Step="1" OnChange="@(v=>Dispatch(x=>x with{DurationSecondsDouble= v}))" Value="@Config.DurationSecondsDouble"/>
-                <Tag>Max Height @Config.MaxHeightFactor.ToString("G2")</Tag>
-                <Slider TooltipVisible="true"
-                        TValue="(double, double)"
-                        Dots="true"
-                        Min="0"
-                        Max="5"
-                        Step="0.2"
-                        DefaultValue="(AnimationStepConfig.DefaultMinHeight,AnimationStepConfig.DefaultMaxHeight)"
-                        OnChange="@((v)=>Dispatch(x=>x with{MinHeightFactor = v.Item1,MaxHeightFactor= v.Item2}))"
-                        />
-
-                @for(var i = 1; i <= Config.Pattern.NumberOfWaypoints; i++)
-                {
-                    var index = i;
-                    <Tag>@Config.Pattern.GetWaypointName(index) @(Config.GetWaypoint(index).ToString("G2"))</Tag>
-                    <Slider TooltipVisible="true" Dots="true" Min="0" Max="1" Step="0.05"
-                            OnChange="@(v=> Dispatch(c=>c.SetWaypoint(index,v)))"
-                            Value="@(Config.GetWaypoint(index))"/>
-                }
-
-
-                <RadioGroup
-                    TValue="PatternEnum"
-                    OnChange="@(SetPattern)"
-                    Value="@Config.Pattern.PatternEnum"
-                    Size="small">
-                    @foreach (var v in Enum.GetValues<PatternEnum>())
-                    {
-                        <Radio RadioButton Value="@v">@v.ToString()</Radio>
-                    }
-                </RadioGroup>
-
-            </Col>
-
-        </InputGroup>
-    </Panel>
-</Collapse>
+<Row>
+    <Col Span="1">
+        <Button Icon="close" OnClick="Close"></Button>
+    </Col>
+    <Col Span="1">
+        <Button Icon="plus" OnClick="AddNew"></Button>
+    </Col>
+    <Col Span="1">
+        <Button Icon="edit" OnClick="Edit"></Button>
+    </Col>
+</Row>*@
 
 
 @code
@@ -69,14 +45,12 @@
     [Parameter]
     public int Index { get; set; }
 
-    public AnimationStepConfig Config => State.Value.StepConfigs[Index];
-
     public string Word => State.Value.WordList.Words[Index];
 
     private void WordChanged(string w)
     {
-        if(w != Word)
-            Dispatcher.Dispatch(new SetWordAction(Index, w??""));
+        if (w != Word)
+            Dispatcher.Dispatch(new SetWordAction(Index, w ?? ""));
     }
 
     public void AddNew()
@@ -87,24 +61,19 @@
         Dispatcher.Dispatch(new AddAction(word, Index + 1, config));
     }
 
-    private void Dispatch(Func<AnimationStepConfig, AnimationStepConfig> func)
-    {
-        var action = new SetConfigAction(Index, func);
-        Dispatcher.Dispatch(action);
-    }
-
-    public void SetPattern(PatternEnum patternEnum)
-    {
-        if (Config.Pattern.PatternEnum == patternEnum)
-            return;
-        var pattern = Pattern.GetPattern(patternEnum);
-        var action = new SetConfigAction(Index, x=> x with{Pattern = pattern});
-        Dispatcher.Dispatch(action);
-    }
-
     public void Close()
     {
         Dispatcher.Dispatch(new RemoveWordAction(Index));
+    }
+
+    public void Edit()
+    {
+        Dispatcher.Dispatch(new OpenEditingConfig(Index));
+    }
+
+    public void Jump()
+    {
+        Dispatcher.Dispatch(new JumpToAction(Index));
     }
 
 }

@@ -40,31 +40,43 @@ public record SetWordAction(int Index, string Word) :  IWordChangedAction
         {
             dispatcher.Dispatch(new PauseAnimateAction());
             await ValueTask.CompletedTask;
+            dispatcher.Dispatch(new JumpToAction(action.Index));
             await Task.Delay(100);
-            dispatcher.Dispatch(new RestoreAnimateAction(action.Index));
+            dispatcher.Dispatch(new RestoreAnimateAction());
         }
     }
 
 
     public record PauseAnimateAction : IAction
     {
-        /// <inheritdoc />b 
+        /// <inheritdoc />b
         public State Reduce(State state) => state with { Config = state.Config with { EnableAnimation = false} };
     }
 
-    public record RestoreAnimateAction(int AnimationDelayIndex) : IAction
+    public record RestoreAnimateAction : IAction
     {
         public State Reduce(State state)
         {
-            var totalDelay = state.StepConfigs
-                .Take(AnimationDelayIndex)
-                .Select(x => x.DurationSeconds)
-                .DefaultIfEmpty(0)
-                .Sum();
 
-            return state with { Config = state.Config with { EnableAnimation = true, AnimationDelaySeconds = totalDelay} };
+
+            return state with { Config = state.Config with { EnableAnimation = true} };
         }
     }
+
+public record JumpToAction(int AnimationDelayIndex) : IAction
+{
+    /// <inheritdoc />
+    public State Reduce(State state)
+    {
+            var totalDelay = state.StepConfigs
+                    .Take(AnimationDelayIndex)
+                    .Select(x => x.DurationSeconds)
+                    .DefaultIfEmpty(0)
+                    .Sum();
+
+            return state with { Config = state.Config with { AnimationDelaySeconds = totalDelay } };
+    }
+}
 
 
     public record RemoveWordAction(int Index) : IWordChangedAction

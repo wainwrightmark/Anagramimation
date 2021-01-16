@@ -1,13 +1,28 @@
 ﻿@using Fluxor
+@using Anagramimation.Blazor.Flux
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <Animation/>
 
-@for (var i = 0; i < State.Value.StepConfigs.Count; i++)
+<Row>
+    @for (var i = 0; i < State.Value.StepConfigs.Count; i++)
 {
     var index = i;
     <WordControl Index="@index" />
 }
+</Row>
+
+
+
+<Drawer
+    OnClose="() => Dispatcher.Dispatch(new CloseEditingConfig())"
+    Visible="@(State.Value.EditingConfigIndex != null)"
+    Placement="bottom">
+    @if (State.Value.EditingConfigIndex.HasValue)
+    {
+        <StepConfigEditor Index="State.Value.EditingConfigIndex.Value"/>
+    }
+</Drawer>
 
 <div>
     <InputGroup>
@@ -28,8 +43,7 @@
                     }
                 </SelectOptions>
             </Select>
-        </Col>
-
+        </Col>''
     </InputGroup>
     <Paragraph Copyable CopyConfig="@(new TypographyCopyableConfig(){Text = State.Value.GetHtml()})" Editable="false">
         HTML

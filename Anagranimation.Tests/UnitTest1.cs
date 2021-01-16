@@ -123,7 +123,7 @@ public class UnitTest1
         var words    = new List<string>() { word1, word2, word3 }.ToImmutableList();
         var wordlist = WordList.Create(words, new CharMatchingConfig());
 
-        var state = new State(
+        var state = new State(null,
             wordlist,
             new CharMatchingConfig(),
             new AnimationGlobalConfig(),
@@ -169,7 +169,7 @@ public class UnitTest1
             var words = new List<string>() { word1, word2, word3, word4 }.ToImmutableList();
             var wordlist = WordList.Create(words, new CharMatchingConfig());
 
-            var state = new State(
+            var state = new State(null,
                 wordlist,
                 new CharMatchingConfig(),
                 new AnimationGlobalConfig(),
