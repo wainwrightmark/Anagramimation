@@ -5,7 +5,6 @@ namespace Anagramimation
 {
 
 public record State(
-    int? EditingConfigIndex,
     WordList WordList,
     CharMatchingConfig CharMatchingConfig,
     AnimationGlobalConfig Config,

@@ -1,5 +1,4 @@
 ﻿@using Fluxor
-@using Anagramimation.Blazor.Flux
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <Col>
@@ -10,31 +9,18 @@
            Placeholder="@(Defaults.GetPlaceHolder(Index))"/>
     <Button Icon="close" OnClick="Close"></Button>
     <Button Icon="plus" OnClick="AddNew"></Button>
-    <Button Icon="edit" OnClick="Edit"></Button>
+    <Popover Visible="EditorVisible" Placement="PlacementType.Bottom" ContentTemplate="@ConfigEditor">
+        <Button Icon="edit" OnClick="()=> EditorVisible = !EditorVisible"></Button>
+    </Popover>
+
 </Col>
-
-@*<Row>
-    <Col Span="3">
-
-
-    </Col>
-</Row>
-
-<Row>
-    <Col Span="1">
-        <Button Icon="close" OnClick="Close"></Button>
-    </Col>
-    <Col Span="1">
-        <Button Icon="plus" OnClick="AddNew"></Button>
-    </Col>
-    <Col Span="1">
-        <Button Icon="edit" OnClick="Edit"></Button>
-    </Col>
-</Row>*@
 
 
 @code
 {
+
+    private RenderFragment ConfigEditor =>
+        @<StepConfigEditor Index="@Index"/>;
 
     [Inject]
     private IState<State> State { get; set; } = null!;
@@ -66,14 +52,11 @@
         Dispatcher.Dispatch(new RemoveWordAction(Index));
     }
 
-    public void Edit()
-    {
-        Dispatcher.Dispatch(new OpenEditingConfig(Index));
-    }
+    private bool EditorVisible { get; set; } = false;
 
-    public void Jump()
-    {
-        Dispatcher.Dispatch(new JumpToAction(Index));
-    }
+    //public void Jump()
+    //{
+    //    Dispatcher.Dispatch(new JumpToAction(Index));
+    //}
 
 }
