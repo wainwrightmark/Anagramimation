@@ -16,7 +16,7 @@ public static class Defaults
         "Someone's name?",
         "Make a chain",
         "That connects you",
-        "With your flame 🔥",
+        "To your flame 🔥",
         "Try the options",
         "There's a ton",
         "Get creative",
