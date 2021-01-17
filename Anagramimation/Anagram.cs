@@ -11,10 +11,6 @@ public class AnagramDictionary
     public static readonly Lazy<AnagramDictionary> Default = new(
         () => new AnagramDictionary(Words.AllWords));
 
-
-        public static readonly Lazy<AnagramDictionary> Animals = new(
-            () => new AnagramDictionary(Words.Animals));
-
         public AnagramDictionary(string s)
     {
         var words = s.Split(
@@ -58,20 +54,21 @@ public class AnagramDictionary
         if(maxWords <= 1)
             yield break;
 
-        for (var i = key.Length / 2; i > 0; i--)
+        for (var firstSubstringLength = key.Length / 2; firstSubstringLength > 0; firstSubstringLength--)
         {
-            foreach (var (left, right) in key.GetPairs(i, 'a'))
+            foreach (var substring in key.GetSubstrings(firstSubstringLength, 'a'))
             {
-                if (Dictionary.TryGetValue(left, out var leftWordList) && leftWordList.Any())
-                {
-                    foreach (var anagram in GetAnagrams(right, maxWords - 1))
-                    {
-                        foreach (var l in leftWordList)
-                        {
-                            yield return anagram.Add(l);
-                        }
-                    }
-                }
+                if (!Dictionary.TryGetValue(substring, out var words))
+                    continue;
+
+                var remainder = key.TrySubtract(substring);
+
+                if (remainder == null)
+                    continue;
+
+                foreach (var wordList in GetAnagrams(remainder, maxWords - 1))
+                foreach (var word in words)
+                    yield return wordList.Add(word);
             }
         }
     }
@@ -101,7 +98,7 @@ public sealed record AnagramKey(ImmutableSortedDictionary<char, int> Dict)
                     new AnagramKey(ImmutableSortedDictionary<char, int>.Empty.Add((char)x, 1))
             );
 
-    public AnagramKey Combine(AnagramKey other)
+    public AnagramKey Add(AnagramKey other)
     {
         if (Dict.IsEmpty)
             return other;
@@ -121,11 +118,59 @@ public sealed record AnagramKey(ImmutableSortedDictionary<char, int> Dict)
         return new AnagramKey(newDict);
     }
 
-    private string? _key;
+    public AnagramKey? TrySubtract(AnagramKey other)
+    {
+        if (other.Dict.IsEmpty)
+            return this;
+
+        var newDict = Dict;
+
+        foreach (var (key, amountToSubtract) in other.Dict)
+        {
+            if (newDict.TryGetValue(key, out var oldValue))
+            {
+                if(amountToSubtract > oldValue)return null;
+                if (amountToSubtract == oldValue)
+                    newDict = newDict.Remove(key);
+                else
+                    newDict = newDict.SetItem(key, oldValue - amountToSubtract);
+            }
+        }
+
+        return new AnagramKey(newDict);
+    }
+
+        private string? _key;
 
     public string Key => _key
         ??= new string(Dict.SelectMany(x => Enumerable.Repeat(x.Key, x.Value)).ToArray());
 
+
+    public IEnumerable<AnagramKey> GetSubstrings(int length, char firstChar)
+    {
+        if(length > Length)
+            yield break;
+
+        if (length == Length)
+        {
+            yield return this;
+            yield break;
+        }
+
+        foreach (var (key, oldValue) in Dict.Where(x=>x.Key >= firstChar))
+        {
+                var newKey = oldValue <= 1
+                 ? new AnagramKey(Dict.Remove(key))
+                 : new AnagramKey(Dict.SetItem(key, oldValue - 1));
+
+                foreach (var ak in newKey.GetSubstrings(length, key))
+                    yield return ak;
+        }
+    }
+
+
+
+    /*
     public IEnumerable<(AnagramKey left, AnagramKey right)> GetPairs(
         int rightLength,
         char firstChar)
@@ -166,7 +211,7 @@ public sealed record AnagramKey(ImmutableSortedDictionary<char, int> Dict)
                     yield return (finalLeft, finalRight.Combine(right));
             }
         }
-    }
+    }*/
 
     public int Length => Key.Length;
 

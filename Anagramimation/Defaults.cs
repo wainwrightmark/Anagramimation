@@ -42,7 +42,7 @@ public static class Defaults
             {
                 return l
                     .Where(x=> !x.All(rootWords.Contains) )
-                    .Select(anagram => string.Join(' ', anagram.Where(x => x.Length > 1)))
+                    .Select(anagram => string.Join(' ', anagram))
                     .ToList();
             }
 
@@ -53,7 +53,7 @@ public static class Defaults
             if (!wordListList.Any())
             {
                 wordListList =
-                    Filter(AnagramDictionary.Default.Value.GetAnagrams(root, 3))
+                    Filter(AnagramDictionary.Default.Value.GetAnagrams(root, 2))
                         .Take(10)
                         .ToList();
             }
