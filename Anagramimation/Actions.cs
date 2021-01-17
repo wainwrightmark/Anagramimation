@@ -94,6 +94,51 @@ public record RemoveWordAction(int Index) : IWordChangedAction
     }
 }
 
+public record SuggestWordAction(int Index) : IWordChangedAction
+{
+    /// <inheritdoc />
+    public State Reduce(State state)
+    {
+        var newWord = Defaults.SuggestWord();
+
+        state = state with
+        {
+            WordList = WordList.Create(
+                state.WordList.Words.SetItem(Index, newWord),
+                state.CharMatchingConfig
+            )
+        };
+
+        return state;
+    }
+}
+
+public record AnagramWordAction(int Index) : IWordChangedAction
+{
+    /// <inheritdoc />
+    public State Reduce(State state)
+    {
+        string currentWord;
+
+        if (Index <= state.WordList.Words.Count)
+            currentWord = state.WordList.Words[Index];
+        else
+            currentWord = "";
+
+        var newWord = Defaults.TryAnagramWord(currentWord);
+
+        state = state with
+        {
+            WordList = WordList.Create(
+                state.WordList.Words.SetItem(Index, newWord),
+                state.CharMatchingConfig
+            )
+        };
+
+        return state;
+    }
+}
+
 public record AddAction(int Index) : IWordChangedAction
 {
     /// <inheritdoc />

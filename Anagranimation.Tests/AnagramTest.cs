@@ -19,14 +19,16 @@ namespace Anagramimation.Tests
         public AnagramDictionary Dictionary;
 
         [Theory]
-        [InlineData("tab", "bat")]
-        [InlineData("silent", "listen")]
-        [InlineData("Clint Eastwood", "act dew soliton")]
-        [InlineData("Mark Wainwright", "hawk trigram win")]
-        public void TestAnagrams(string text, string expected)
+        [InlineData("tab", 2, "bat")]
+        [InlineData("silent",2, "listen")]
+        [InlineData("Clint Eastwood",2, "coil downstate")]
+        [InlineData("Mark Wainwright",3, "hawk trigram win")]
+        [InlineData("Mark Wainwright",4, "hawk trigram win")]
+        [InlineData("tome",2, "me to")]
+        public void TestAnagrams(string text, int words, string expected)
         {
             var sw = Stopwatch.StartNew();
-            var anagrams = Dictionary.GetAnagrams(text)
+            var anagrams = Dictionary.GetAnagrams(text, words)
                 .Select(x=>x.OrderBy(w=>w))
                 .Select(a=>string.Join(' ',a))
                 .Take(1000).ToList();

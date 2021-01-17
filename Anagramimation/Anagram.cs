@@ -30,15 +30,16 @@ public class AnagramDictionary
     public readonly IReadOnlyDictionary<AnagramKey, ImmutableList<string>> Dictionary;
 
 
-    public IEnumerable<ImmutableList<string>> GetAnagrams(string text)
+    public IEnumerable<ImmutableList<string>> GetAnagrams(string text, int maxWords)
     {
         var key = AnagramKey.FromString(text);
 
-        return GetAnagrams(key);
+        return GetAnagrams(key, maxWords);
     }
 
-    public IEnumerable<ImmutableList<string>> GetAnagrams(AnagramKey key)
+    public IEnumerable<ImmutableList<string>> GetAnagrams(AnagramKey key, int maxWords)
     {
+
         if (key.Length == 0)
         {
             yield return ImmutableList<string>.Empty;
@@ -46,9 +47,16 @@ public class AnagramDictionary
             yield break;
         }
 
+        if(maxWords <= 0)
+            yield break;
+
         if (Dictionary.TryGetValue(key, out var list))
             foreach (var w in list)
                 yield return ImmutableList<string>.Empty.Add(w);
+
+
+        if(maxWords <= 1)
+            yield break;
 
         for (var i = key.Length / 2; i > 0; i--)
         {
@@ -56,7 +64,7 @@ public class AnagramDictionary
             {
                 if (Dictionary.TryGetValue(left, out var leftWordList) && leftWordList.Any())
                 {
-                    foreach (var anagram in GetAnagrams(right))
+                    foreach (var anagram in GetAnagrams(right, maxWords - 1))
                     {
                         foreach (var l in leftWordList)
                         {
@@ -154,7 +162,7 @@ public sealed record AnagramKey(ImmutableSortedDictionary<char, int> Dict)
                 var        right   = FromChar[key];
 
                 foreach (var (finalLeft, finalRight) in
-                    newLeft.GetPairs(rightLength - 1, firstChar))
+                    newLeft.GetPairs(rightLength - 1, key))
                     yield return (finalLeft, finalRight.Combine(right));
             }
         }

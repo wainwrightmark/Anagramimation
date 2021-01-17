@@ -12,6 +12,8 @@
     <Popover Visible="EditorVisible" Placement="PlacementType.Bottom" ContentTemplate="@ConfigEditor">
         <Button Icon="edit" OnClick="()=> EditorVisible = !EditorVisible"></Button>
     </Popover>
+    <Button Icon="question-circle" OnClick="Suggest"></Button>
+    <Button Icon="branches" OnClick="Anagram"></Button>
 
 </AntDesign.Col>
 
@@ -42,13 +44,22 @@
 
     public void AddNew()
     {
-        var i = State.Value.WordList.Words.Count;
         Dispatcher.Dispatch(new AddAction( Index + 1));
     }
 
     public void Close()
     {
         Dispatcher.Dispatch(new RemoveWordAction(Index));
+    }
+
+    public void Suggest()
+    {
+        Dispatcher.Dispatch(new SuggestWordAction(Index));
+    }
+
+    public void Anagram()
+    {
+        Dispatcher.Dispatch(new AnagramWordAction(Index));
     }
 
     private bool EditorVisible { get; set; } = false;
