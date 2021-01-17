@@ -14,7 +14,7 @@
 <Collapse>
     <Panel Header="Advanced">
     <InputGroup>
-        <Col>
+        <AntDesign.Col>
             <Tag>Font @State.Value.Config.FontPixels</Tag>
             <Slider TooltipVisible="true" Dots="true" Min="1" Max="100" Step="1" OnChange="@(v=>Dispatch(x=>x with{FontPixelsDouble=v}))" Value="@State.Value.Config.FontPixelsDouble"/>
             <Tag>Width @State.Value.Config.RelativeWidth</Tag>
@@ -31,7 +31,7 @@
                     }
                 </SelectOptions>
             </Select>
-        </Col>
+        </AntDesign.Col>
     </InputGroup>
     <Paragraph Copyable CopyConfig="@(new TypographyCopyableConfig(){Text = State.Value.GetHtml()})" Editable="false">
         HTML

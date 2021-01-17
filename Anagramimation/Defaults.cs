@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Anagramimation
 {
 
 public static class Defaults
 {
-    private static readonly IReadOnlyList<string> DefaultWords = new List<string>()
+    private static readonly List<string> DefaultWords = new()
     {
         "Animate",
         "Anagram",
@@ -23,11 +25,45 @@ public static class Defaults
         "And have fun",
     };
 
-    public static string GetWord(int i) => DefaultWords[i % DefaultWords.Count];
-
-    private static readonly IReadOnlyList<string> PlaceHolders = new List<string>()
+    public static string GetNextWord(int i, string previousWord)
     {
-        "Type Something"
+        if (i == 0)
+            return DefaultWords[0];
+
+        if (string.IsNullOrWhiteSpace(previousWord))
+            return "";
+
+        var previousWordIndex = DefaultWords.IndexOf(previousWord);
+
+        if (previousWordIndex == i - 1 && i < DefaultWords.Count)
+            return DefaultWords[i];
+
+        var anagrams =
+            AnagramDictionary.Default.Value.GetAnagrams(previousWord).Take(10)
+                .Select(anagram=> string.Join(' ', anagram.Where(x => x.Length > 1)))
+                .Where(x=> !x.Equals(previousWord, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+        if (!anagrams.Any()) // Slightly hacky  - replace with a random animal
+            anagrams = AnagramDictionary.Animals.Value.Dictionary.Values
+                .Select(anagram=> string.Join(' ', anagram.Where(x => x.Length > 1)))
+                .Where(x=> !x.Equals(previousWord, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+
+        if (!anagrams.First().Contains(' ')) //prioritize full anagrams
+            return anagrams.First();
+
+        var r = new Random();
+        var chosen = anagrams[r.Next(anagrams.Count)];
+
+
+        return chosen;
+    }
+
+    private static readonly List<string> PlaceHolders = new()
+    {
+        "Type Anything"
     };
 
     public static string GetPlaceHolder(int i) => PlaceHolders[i % PlaceHolders.Count];

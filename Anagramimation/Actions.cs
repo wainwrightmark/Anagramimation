@@ -12,11 +12,11 @@ public interface IAction
 }
 
 public interface IWordChangedAction : IAction
-    {
-        int Index{get;}
-    }
+{
+    int Index { get; }
+}
 
-public record SetWordAction(int Index, string Word) :  IWordChangedAction
+public record SetWordAction(int Index, string Word) : IWordChangedAction
 {
     /// <inheritdoc />
     public State Reduce(State state)
@@ -33,89 +33,94 @@ public record SetWordAction(int Index, string Word) :  IWordChangedAction
     }
 }
 
-    public class SetWordEffect : Effect<IWordChangedAction>
+public class SetWordEffect : Effect<IWordChangedAction>
+{
+    /// <inheritdoc />
+    protected override async Task HandleAsync(IWordChangedAction action, IDispatcher dispatcher)
     {
-        /// <inheritdoc />
-        protected override async Task HandleAsync(IWordChangedAction action, IDispatcher dispatcher)
-        {
-            dispatcher.Dispatch(new PauseAnimateAction());
-            await ValueTask.CompletedTask;
-            dispatcher.Dispatch(new JumpToAction(action.Index));
-            await Task.Delay(100);
-            dispatcher.Dispatch(new RestoreAnimateAction());
-        }
+        dispatcher.Dispatch(new PauseAnimateAction());
+        await ValueTask.CompletedTask;
+        dispatcher.Dispatch(new JumpToAction(action.Index));
+        await Task.Delay(100);
+        dispatcher.Dispatch(new RestoreAnimateAction());
     }
+}
 
+public record PauseAnimateAction : IAction
+{
+    /// <inheritdoc />b
+    public State Reduce(State state) =>
+        state with { Config = state.Config with { EnableAnimation = false } };
+}
 
-    public record PauseAnimateAction : IAction
+public record RestoreAnimateAction : IAction
+{
+    public State Reduce(State state)
     {
-        /// <inheritdoc />b
-        public State Reduce(State state) => state with { Config = state.Config with { EnableAnimation = false} };
+        return state with { Config = state.Config with { EnableAnimation = true } };
     }
-
-    public record RestoreAnimateAction : IAction
-    {
-        public State Reduce(State state)
-        {
-
-
-            return state with { Config = state.Config with { EnableAnimation = true} };
-        }
-    }
+}
 
 public record JumpToAction(int AnimationDelayIndex) : IAction
 {
     /// <inheritdoc />
     public State Reduce(State state)
     {
-            var totalDelay = state.StepConfigs
-                    .Take(AnimationDelayIndex)
-                    .Select(x => x.DurationSeconds)
-                    .DefaultIfEmpty(0)
-                    .Sum();
+        var totalDelay = state.StepConfigs
+            .Take(AnimationDelayIndex)
+            .Select(x => x.DurationSeconds)
+            .DefaultIfEmpty(0)
+            .Sum();
 
-            return state with { Config = state.Config with { AnimationDelaySeconds = totalDelay } };
+        return state with { Config = state.Config with { AnimationDelaySeconds = totalDelay } };
     }
 }
 
-
-    public record RemoveWordAction(int Index) : IWordChangedAction
+public record RemoveWordAction(int Index) : IWordChangedAction
 {
     /// <inheritdoc />
     public State Reduce(State state)
     {
-            state = state with
-            {
-                WordList = WordList.Create(
-                    state.WordList.Words.RemoveAt(Index),
-                    state.CharMatchingConfig
-                ),
-                StepConfigs = state.StepConfigs.RemoveAt(Index)
-            };
+        var newState = state with
+        {
+            WordList = WordList.Create(
+                state.WordList.Words.RemoveAt(Index),
+                state.CharMatchingConfig
+            ),
+            StepConfigs = state.StepConfigs.RemoveAt(Index)
+        };
 
-            return state;
-        }
+        return newState;
+    }
 }
 
-public record AddAction(string Word, int Index, AnimationStepConfig Config) : IWordChangedAction
+public record AddAction(int Index) : IWordChangedAction
 {
     /// <inheritdoc />
     public State Reduce(State state)
     {
+        var previousWord =
+            Index >= 0 &&
+            Index <= state.WordList.Words.Count
+                ? state.WordList.Words[Index - 1]
+                : "";
 
-        var newWords = state.WordList.Words.Insert(Index, Word);
+        var newWord  = Defaults.GetNextWord(Index, previousWord);
+        var newWords = state.WordList.Words.Insert(Index, newWord);
+        var config   = Defaults.GetStepConfig(Index);
 
         state = state with
         {
             WordList = WordList.Create(newWords, state.CharMatchingConfig),
-            StepConfigs = state.StepConfigs.Insert(Index, Config)
+            StepConfigs = state.StepConfigs.Insert(Index, config)
         };
 
         return state;
     }
 }
 
-public record SetGlobalConfigAction(Func<AnimationGlobalConfig, AnimationGlobalConfig> Func) : IAction
+public record SetGlobalConfigAction(
+    Func<AnimationGlobalConfig, AnimationGlobalConfig> Func) : IAction
 {
     /// <inheritdoc />
     public State Reduce(State state)
@@ -125,7 +130,9 @@ public record SetGlobalConfigAction(Func<AnimationGlobalConfig, AnimationGlobalC
     }
 }
 
-public record SetConfigAction(int Index, Func<AnimationStepConfig, AnimationStepConfig> Func) : IAction
+public record SetConfigAction(
+    int Index,
+    Func<AnimationStepConfig, AnimationStepConfig> Func) : IAction
 {
     /// <inheritdoc />
     public State Reduce(State state)

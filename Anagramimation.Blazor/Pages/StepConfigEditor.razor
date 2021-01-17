@@ -1,41 +1,50 @@
 ﻿<InputGroup>
-            <Col>
+    <AntDesign.Col>
 
-                <Tag>Duration @Config.DurationSecondsDouble.ToString("G2")</Tag>
-                <Slider TooltipVisible="true" Dots="true" Min="1" Max="10" Step="1" OnChange="@(v=>Dispatch(x=>x with{DurationSecondsDouble= v}))" Value="@Config.DurationSecondsDouble"/>
-                <Tag>Max Height @Config.MaxHeightFactor.ToString("G2")</Tag>
-                <Slider TooltipVisible="true"
-                        TValue="(double, double)"
-                        Dots="true"
-                        Min="0"
-                        Max="5"
-                        Step="0.2"
-                        DefaultValue="(AnimationStepConfig.DefaultMinHeight,AnimationStepConfig.DefaultMaxHeight)"
-                        OnChange="@((v)=>Dispatch(x=>x with{MinHeightFactor = v.Item1,MaxHeightFactor= v.Item2}))"
-                        />
+        <Tag>Duration @Config.DurationSecondsDouble.ToString("G2")</Tag>
+        <Slider
+            Dots="true"
+            Min="1"
+            Max="10"
+            Step="1"
+            OnChange="@(v => Dispatch(x => x with{DurationSecondsDouble= v}))"
+            Value="@Config.DurationSecondsDouble"/>
+        <Tag>Height @Config.MinHeightFactor.ToString("G2")-@Config.MaxHeightFactor.ToString("G2")</Tag>
+        <Slider
+            TValue="(double, double)"
+            Dots="true"
+            Min="0"
+            Max="5"
+            Step="0.2"
+            DefaultValue="(AnimationStepConfig.DefaultMinHeight,AnimationStepConfig.DefaultMaxHeight)"
+            OnChange="@((v) => Dispatch(x => x with{MinHeightFactor = v.Item1,MaxHeightFactor= v.Item2}))"/>
 
-                @for(var i = 1; i <= Config.Pattern.NumberOfWaypoints; i++)
-                {
-                    var index = i;
-                    <Tag>@Config.Pattern.GetWaypointName(index) @(Config.GetWaypoint(index).ToString("G2"))</Tag>
-                    <Slider TooltipVisible="true" Dots="true" Min="0" Max="1" Step="0.05"
-                            OnChange="@(v=> Dispatch(c=>c.SetWaypoint(index,v)))"
-                            Value="@(Config.GetWaypoint(index))"/>
-                }
+        @for (var i = 1; i <= Config.Pattern.NumberOfWaypoints; i++)
+        {
+            var index = i;
+            <Tag>@Config.Pattern.GetWaypointName(index) @(Config.GetWaypoint(index).ToString("G2"))</Tag>
+            <Slider
+                Dots="true"
+                Min="0"
+                Max="1"
+                Step="0.05"
+                OnChange="@(v => Dispatch(c => c.SetWaypoint(index, v)))"
+                Value="@(Config.GetWaypoint(index))"/>
+        }
 
 
-                <RadioGroup
-                    TValue="PatternEnum"
-                    OnChange="@(SetPattern)"
-                    Value="@Config.Pattern.PatternEnum"
-                    Size="small">
-                    @foreach (var v in Enum.GetValues<PatternEnum>())
-                    {
-                        <Radio RadioButton Value="@v">@v.ToString()</Radio>
-                    }
-                </RadioGroup>
+        <RadioGroup
+            TValue="PatternEnum"
+            OnChange="@(SetPattern)"
+            Value="@Config.Pattern.PatternEnum"
+            Size="small">
+            @foreach (var v in Enum.GetValues<PatternEnum>())
+            {
+                <Radio RadioButton Value="@v">@v.ToString()</Radio>
+            }
+        </RadioGroup>
 
-            </Col>
+    </AntDesign.Col>
 
         </InputGroup>
 
@@ -49,7 +58,7 @@
     [Parameter]
     public int Index { get; set; }
 
-    public AnimationStepConfig Config => State.Value.StepConfigs[Index];
+    public AnimationStepConfig Config => Index < State.Value.StepConfigs.Count ? State.Value.StepConfigs[Index] : new AnimationStepConfig();
 
     private void Dispatch(Func<AnimationStepConfig, AnimationStepConfig> func)
     {

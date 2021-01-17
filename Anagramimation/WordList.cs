@@ -16,12 +16,22 @@ public record WordList(
     public ImmutableList<int> WordLengths => _wordLengths ??=
         Words.Select(x => x.EnumerateRunes().Count()).ToImmutableList();
 
+    public static readonly WordList Empty = new(
+        ImmutableList<Path>.Empty,
+        ImmutableList<string>.Empty
+    );
+
     public static WordList Create(IEnumerable<string> words, CharMatchingConfig charMatching)
     {
-        return words.Aggregate<string, WordList?>(
+        var result = words.Aggregate<string, WordList?>(
             null,
             (a, w) => a == null ? Create(w) : a.AddWord(w, charMatching)
-        )!;
+        );
+
+        if (result == null)
+            return Empty;
+
+        return result;
     }
 
     public static WordList Create(string wordString)
