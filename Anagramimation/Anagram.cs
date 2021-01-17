@@ -9,16 +9,12 @@ namespace Anagramimation
 public class AnagramDictionary
 {
     public static readonly Lazy<AnagramDictionary> Default = new(
-        () => new AnagramDictionary(Words.AllWords));
+        () => new AnagramDictionary(new Words.DictionaryHelper(2).AllWords.Value));
 
-        public AnagramDictionary(string s)
+
+    public AnagramDictionary(IEnumerable<string> words)
     {
-        var words = s.Split(
-            new []{'\r','\n'},
-            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
-        );
-
-        Dictionary = words.Select(word => (key: AnagramKey.FromString(word), word))
+            Dictionary = words.Select(word => (key: AnagramKey.FromString(word), word))
             .GroupBy(x => x.key, x => x.word)
             .ToDictionary(x => x.Key, x => x.ToImmutableList());
     }

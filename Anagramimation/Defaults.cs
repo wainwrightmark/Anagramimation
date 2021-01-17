@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Anagramimation
@@ -36,37 +37,50 @@ public static class Defaults
 
     public static string TryAnagramWord(string root)
     {
-        var rootWords = root.ToLowerInvariant().Split(' ').ToHashSet();
+        var rootWords = root.ToLowerInvariant().Split(' ').ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            IEnumerable<string> Filter(IEnumerable<ImmutableList<string>> l)
-            {
-                return l
-                    .Where(x=> !x.All(rootWords.Contains) )
-                    .Select(anagram => string.Join(' ', anagram))
-                    .ToList();
-            }
+        Console.WriteLine($"Finding Anagrams for: {root}");
 
-            var wordListList = Filter(AnagramDictionary.Default.Value.GetAnagrams(root, 1))
+        var sw = Stopwatch.StartNew();
+        IEnumerable<string> Filter(IEnumerable<ImmutableList<string>> l)
+        {
+            return l
+                .Where(x => !x.All(rootWords.Contains))
+                .Select(anagram => string.Join(' ', anagram))
+                .ToList();
+        }
+
+        var dictionary = AnagramDictionary.Default.Value;
+        Console.WriteLine($"Created Dictionary {dictionary.Dictionary.Count} words. {sw.Elapsed.TotalSeconds}s");
+
+        var wordListList = Filter(dictionary.GetAnagrams(root, 1))
+            .Take(10)
+            .ToList();
+
+        Console.WriteLine($"Found {wordListList.Count} single word anagrams. {sw.Elapsed.TotalSeconds}s");
+
+        if (!wordListList.Any())
+        {
+            wordListList =
+                Filter(dictionary.GetAnagrams(root, 2))
                     .Take(10)
                     .ToList();
 
-            if (!wordListList.Any())
-            {
-                wordListList =
-                    Filter(AnagramDictionary.Default.Value.GetAnagrams(root, 2))
-                        .Take(10)
-                        .ToList();
-            }
+            Console.WriteLine($"Found {wordListList.Count}  anagrams. {sw.Elapsed.TotalSeconds}s");
+        }
 
-            if (wordListList.Any())
-                return wordListList.GetRandom();
+        if (wordListList.Any())
+        {
+            Console.WriteLine("Returning random.");
+            return wordListList.GetRandom();
+        }
 
-            return root;
+        return root;
     }
 
     private static readonly Lazy<IReadOnlyList<string>> Adjectives =
         new(
-            () => Words.Adjectives.Split(
+            () => WordsResource.Adjectives.Split(
                 new[] { '\r', '\n' },
                 StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries
             )
@@ -74,7 +88,7 @@ public static class Defaults
 
     private static readonly Lazy<IReadOnlyList<string>> Animals =
         new(
-            () => Words.Animals.Split(
+            () => WordsResource.Animals.Split(
                 new[] { '\r', '\n' },
                 StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries
             )

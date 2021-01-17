@@ -13,7 +13,7 @@ namespace Anagramimation.Tests
         public AnagramTest(ITestOutputHelper testOutputHelper)
         {
             TestOutputHelper = testOutputHelper;
-            Dictionary = new AnagramDictionary(Words.AllWords);
+            Dictionary       = AnagramDictionary.Default.Value;
         }
 
         public AnagramDictionary Dictionary;
@@ -33,7 +33,7 @@ namespace Anagramimation.Tests
             var anagrams = Dictionary.GetAnagrams(text, words)
                 .Select(x => x.OrderBy(w => w))
                 .Select(a => string.Join(' ', a))
-                .Take(10000).ToList();
+                .Take(1000000).ToList();
 
             TestOutputHelper.WriteLine(anagrams.Count + " anagrams found");
             TestOutputHelper.WriteLine(sw.Elapsed.ToString());

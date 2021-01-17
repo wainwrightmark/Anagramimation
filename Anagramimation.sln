@@ -14,6 +14,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anagramimation.Tests", "Ana
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Anagramimation.Blazor", "Anagramimation.Blazor\Anagramimation.Blazor.csproj", "{7F9A24D0-D855-4584-BD58-A1DBD920A91F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Words", "Words\Words.csproj", "{7371123C-E053-4BBC-92B1-F8BE3EEA1D41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{7F9A24D0-D855-4584-BD58-A1DBD920A91F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F9A24D0-D855-4584-BD58-A1DBD920A91F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F9A24D0-D855-4584-BD58-A1DBD920A91F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7371123C-E053-4BBC-92B1-F8BE3EEA1D41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7371123C-E053-4BBC-92B1-F8BE3EEA1D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7371123C-E053-4BBC-92B1-F8BE3EEA1D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7371123C-E053-4BBC-92B1-F8BE3EEA1D41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

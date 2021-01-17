@@ -22,14 +22,14 @@ namespace Anagramimation {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Words {
+    public class WordsResource {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Words() {
+        internal WordsResource() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Anagramimation {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Anagramimation.Words", typeof(Words).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Anagramimation.WordsResource", typeof(WordsResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -119,79 +119,6 @@ namespace Anagramimation {
         public static string Adjectives {
             get {
                 return ResourceManager.GetString("Adjectives", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to a
-        ///aback
-        ///abacus
-        ///abalone
-        ///abandon
-        ///abase
-        ///abash
-        ///abate
-        ///abater
-        ///abbas
-        ///abbe
-        ///abbey
-        ///abbot
-        ///abbreviate
-        ///abc
-        ///abdicate
-        ///abdomen
-        ///abdominal
-        ///abduct
-        ///abed
-        ///aberrant
-        ///aberrate
-        ///abet
-        ///abetted
-        ///abetting
-        ///abeyance
-        ///abeyant
-        ///abhorred
-        ///abhorrent
-        ///abide
-        ///abject
-        ///ablate
-        ///ablaze
-        ///able
-        ///ablution
-        ///abnormal
-        ///aboard
-        ///abode
-        ///abolish
-        ///abolition
-        ///abominable
-        ///abominate
-        ///aboriginal
-        ///aborigine
-        ///aborning
-        ///abort
-        ///abound
-        ///about
-        ///above
-        ///aboveboard
-        ///aboveground
-        ///abovementioned
-        ///abrade
-        ///abrasion
-        ///abrasive
-        ///abreact
-        ///abreast
-        ///abridge
-        ///abridgment
-        ///abroad
-        ///abrogate
-        ///abrupt
-        ///abscess
-        ///abscissa
-        ///abscissa [rest of string was truncated]&quot;;.
-        /// </summary>
-        public static string AllWords {
-            get {
-                return ResourceManager.GetString("AllWords", resourceCulture);
             }
         }
         
